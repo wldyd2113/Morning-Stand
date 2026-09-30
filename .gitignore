@@ -1,0 +1,90 @@
+# ---------------------------------------------
+# macOS
+# ---------------------------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+
+# ---------------------------------------------
+# Xcode
+# ---------------------------------------------
+build/
+DerivedData/
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+timeline.xctimeline
+playground.xcworkspace
+
+# Xcode Swift Package Manager
+.swiftpm/
+Packages/
+.build/
+
+# ---------------------------------------------
+# Dependency managers
+# ---------------------------------------------
+# CocoaPods
+Pods/
+# Carthage
+Carthage/Build/
+Carthage/Checkouts
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# ---------------------------------------------
+# 🔐 Secrets / API Key (추적 금지)
+# ---------------------------------------------
+# 환경변수 파일
+.env
+.env.*
+!.env.example
+
+# Key 관련 소스/설정 파일
+Key/
+Keys/
+Secrets/
+*Key.swift
+*Keys.swift
+*Secret.swift
+*Secrets.swift
+*ApiKey*.swift
+*APIKey*.swift
+Key.plist
+Keys.plist
+Secrets.plist
+*.xcconfig
+!Sample.xcconfig
+
+# 인증서 / 프로비저닝 / 서비스 계정
+*.pem
+*.key
+*.p12
+*.p8
+*.cer
+*.certSigningRequest
+*.mobileprovision
+*.provisionprofile
+GoogleService-Info.plist
+firebase_credentials.json
