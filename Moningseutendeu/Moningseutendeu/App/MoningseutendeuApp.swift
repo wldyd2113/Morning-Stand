@@ -1,17 +1,12 @@
-//
-//  MoningseutendeuApp.swift
-//  Moningseutendeu
-//
-//  Created by 차지용 on 9/30/26.
-//
-
 import SwiftUI
 
 @main
 struct MoningseutendeuApp: App {
+    private let dependencies = AppDependencies.live()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView(dependencies: dependencies)
         }
     }
 }
