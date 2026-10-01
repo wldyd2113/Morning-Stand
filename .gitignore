@@ -76,6 +76,9 @@ Keys.plist
 Secrets.plist
 *.xcconfig
 !Sample.xcconfig
+!Base.xcconfig
+# 실제 키와 서버 주소는 여기에만 둔다 (명시적으로 한 번 더)
+Config/Secrets.xcconfig
 
 # 인증서 / 프로비저닝 / 서비스 계정
 *.pem

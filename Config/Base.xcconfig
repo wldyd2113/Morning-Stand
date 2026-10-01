@@ -1,0 +1,12 @@
+// Base.xcconfig — 앱 타깃의 Debug/Release에 연결된 공통 설정 (커밋 O).
+// 키와 서버 주소는 Secrets.xcconfig에서 불러온다. `?`가 있어서 파일이 없어도(CI, 새로 클론) 빌드된다.
+
+// Secrets.xcconfig가 없을 때 쓰는 자리표시 값 (ATS 예외 키가 비면 Info.plist가 깨진다)
+SEOUL_BUS_HOST = bus.host.invalid
+SEOUL_SUBWAY_HOST = subway.host.invalid
+
+#include? "Secrets.xcconfig"
+
+// Info.plist의 "키 이름" 자리에는 $(...) 치환이 되지 않아서, ATS 예외 도메인은 전처리 매크로로 넣는다
+INFOPLIST_PREPROCESS = YES
+INFOPLIST_PREPROCESSOR_DEFINITIONS = ATS_EXCEPTION_BUS_HOST=$(SEOUL_BUS_HOST) ATS_EXCEPTION_SUBWAY_HOST=$(SEOUL_SUBWAY_HOST)

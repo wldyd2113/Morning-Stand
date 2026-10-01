@@ -12,6 +12,7 @@
 
 /* Begin PBXFileReference section */
 		3B1DA331306D18B700300035 /* Moningseutendeu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moningseutendeu.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3B1DA350306D1C0000300035 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Base.xcconfig; path = ../Config/Base.xcconfig; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -35,6 +36,7 @@
 		3B1DA328306D18B700300035 = {
 			isa = PBXGroup;
 			children = (
+				3B1DA350306D1C0000300035 /* Base.xcconfig */,
 				3B1DA333306D18B700300035 /* Moningseutendeu */,
 				3B1DA332306D18B700300035 /* Products */,
 			);
@@ -249,6 +251,7 @@
 		};
 		3B1DA33D306D18B800300035 /* Debug configuration for PBXNativeTarget "Moningseutendeu" */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3B1DA350306D1C0000300035 /* Base.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -257,6 +260,7 @@
 				DEVELOPMENT_TEAM = 5CKD3N685F;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Moningseutendeu-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -274,13 +278,14 @@
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
 		3B1DA33E306D18B800300035 /* Release configuration for PBXNativeTarget "Moningseutendeu" */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3B1DA350306D1C0000300035 /* Base.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -289,6 +294,7 @@
 				DEVELOPMENT_TEAM = 5CKD3N685F;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Moningseutendeu-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -306,7 +312,7 @@
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

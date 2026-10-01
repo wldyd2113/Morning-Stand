@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0">
+<dict>
+	<key>DATA_GO_KR_SERVICE_KEY</key>
+	<string>$(DATA_GO_KR_SERVICE_KEY)</string>
+	<key>SEOUL_OPEN_DATA_SUBWAY_KEY</key>
+	<string>$(SEOUL_OPEN_DATA_SUBWAY_KEY)</string>
+	<key>KMA_BASE_URL</key>
+	<string>$(KMA_BASE_URL)</string>
+	<key>AIRKOREA_BASE_URL</key>
+	<string>$(AIRKOREA_BASE_URL)</string>
+	<key>SEOUL_BUS_BASE_URL</key>
+	<string>$(SEOUL_BUS_BASE_URL)</string>
+	<key>SEOUL_SUBWAY_BASE_URL</key>
+	<string>$(SEOUL_SUBWAY_BASE_URL)</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>ATS_EXCEPTION_BUS_HOST</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+			<key>ATS_EXCEPTION_SUBWAY_HOST</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+		</dict>
+	</dict>
+</dict>
+</plist>
