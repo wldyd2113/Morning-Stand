@@ -29,6 +29,11 @@ struct RootView: View {
         .ignoresSafeArea(.keyboard)
         .task { await rootViewModel.observeMotion() }
         .task(id: rootViewModel.candidatePosture) { await rootViewModel.settlePosture() }
+        .task(id: rootViewModel.foldHandoffCount) {
+            // 스탠드 화면을 보다가 접으면 Dynamic Island로 이어서 보여준다
+            guard rootViewModel.foldHandoffCount > 0 else { return }
+            await standViewModel.handOffToLiveActivity()
+        }
         .sheet(isPresented: $rootViewModel.isSettingsPresented) {
             SettingsView(
                 stopSearchViewModel: dependencies.makeStopSearchViewModel(),
@@ -44,6 +49,9 @@ struct RootView: View {
         case .stand:
             StandView(viewModel: standViewModel)
                 .overlay(alignment: .trailing) { modeToggle(symbol: DesignTokens.Symbol.switchToPlanning) }
+        case .glance:
+            GlanceView(viewModel: standViewModel)
+                .overlay(alignment: .bottomLeading) { modeToggle(symbol: DesignTokens.Symbol.switchToPlanning) }
         case .planning:
             @Bindable var rootViewModel = rootViewModel
             PlanningTabView(
@@ -69,7 +77,7 @@ struct RootView: View {
         }
         .opacity(DesignTokens.Opacity.modeToggle)
         .padding(DesignTokens.Spacing.s)
-        .accessibilityLabel(rootViewModel.screenMode == .stand ? Text("플래닝 화면으로 전환") : Text("스탠드 화면으로 전환"))
+        .accessibilityLabel(rootViewModel.screenMode == .planning ? Text("출발 화면으로 전환") : Text("플래닝 화면으로 전환"))
         .accessibilityIdentifier(AppConstants.AccessibilityID.modeToggle)
     }
 }

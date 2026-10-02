@@ -3,6 +3,8 @@ import SwiftUI
 /// 히어로 카드 오른쪽의 "다른 노선" 목록.
 struct OtherRoutesView: View {
     let otherRoutes: StandDisplayModel.OtherRoutes
+    /// 보여줄 최대 줄 수. nil이면 전부 (좁은 커버 화면에서 줄이 중간에 잘리지 않게)
+    var maxRows: Int?
 
     @Environment(\.standPalette) private var palette
     @Environment(\.standScale) private var scale
@@ -21,7 +23,7 @@ struct OtherRoutesView: View {
                 .padding(.top, Tokens.Spacing.skeleton * scale)
             case .rows(let rows, let isDimmed):
                 VStack(spacing: 0) {
-                    ForEach(rows) { row in
+                    ForEach(maxRows.map { Array(rows.prefix($0)) } ?? rows) { row in
                         rowView(row)
                     }
                 }

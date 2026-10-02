@@ -18,6 +18,8 @@ final class StandViewModel {
     @ObservationIgnored private let snapshotPublisher: any WidgetSnapshotPublishing
     @ObservationIgnored private let liveActivity: any LiveActivityControlling
     @ObservationIgnored private let showsLiveActivityAnyTime: Bool
+    /// 접어서 들고 나갔을 때 시작한 Live Activity. 도착 정보가 없어질 때까지 시간대와 상관없이 유지한다
+    @ObservationIgnored private var isLiveActivityHandedOff = false
 
     init(
         weatherRepository: any WeatherRepository,
@@ -60,6 +62,12 @@ final class StandViewModel {
         StandDisplayMapper.footerText(footer, at: date, calendar: calendar)
     }
 
+    /// 스탠드 화면을 보다가 접었을 때: 출근 시간대가 아니어도 Live Activity를 시작해서 Dynamic Island로 이어준다.
+    func handOffToLiveActivity() async {
+        isLiveActivityHandedOff = true
+        await publishToSystemSurfaces()
+    }
+
     /// 화면이 보이는 동안 실행한다. View의 `.task`에서 부르면 화면을 떠날 때 자동으로 취소된다.
     /// 1분마다 시각을 갱신하고, 갱신 주기(출근 시간대 1분, 그 외 5분)가 지나면 다시 불러온다.
     func start() async {
@@ -93,9 +101,11 @@ final class StandViewModel {
         if let snapshot = DashboardSnapshotMapper.snapshot(weather: weather, departures: departures, theme: theme, now: now, calendar: calendar, planDeparture: planDeparture) {
             snapshotPublisher.publish(snapshot)
         }
-        let content = showsLiveActivityAnyTime || Self.isCommuteHour(now, calendar: calendar)
+        let wantsLiveActivity = showsLiveActivityAnyTime || isLiveActivityHandedOff || Self.isCommuteHour(now, calendar: calendar)
+        let content = wantsLiveActivity
             ? DashboardSnapshotMapper.liveActivityContent(departures: departures, now: now, planDeparture: planDeparture)
             : nil
+        if content == nil { isLiveActivityHandedOff = false }
         await liveActivity.sync(content)
     }
 

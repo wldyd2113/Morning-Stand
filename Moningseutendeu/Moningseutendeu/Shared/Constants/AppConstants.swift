@@ -77,6 +77,7 @@ nonisolated enum AppConstants {
 
     enum AccessibilityID {
         static let standRoot = "stand.root"
+        static let glanceRoot = "glance.root"
         static let standClock = "stand.clock"
         static let standHero = "stand.hero"
         static let standOtherRoutes = "stand.otherRoutes"

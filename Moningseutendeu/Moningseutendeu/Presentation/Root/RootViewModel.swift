@@ -13,6 +13,8 @@ final class RootViewModel {
     private(set) var motionState: MotionState = .unavailable
     private(set) var containerSize: CGSize = .zero
     private(set) var manualMode: ScreenMode?
+    /// 스탠드 화면을 보다가 접을 때마다 1씩 늘어난다. View가 이 값으로 Live Activity 넘겨주기를 시작한다
+    private(set) var foldHandoffCount = 0
     var isSettingsPresented = false
     /// 펼침 화면에서 고른 탭. 스탠드로 갔다 와도 유지한다
     var planningTab: PlanningTab = .routes
@@ -82,15 +84,24 @@ final class RootViewModel {
     }
 
     /// 자세가 바뀌면 수동 선택은 풀어서 새 자세를 따른다.
+    /// 스탠드 화면에서 접힘으로 바뀌면 "들고 나가는 중"으로 보고 Live Activity 넘겨주기를 알린다.
     private func commit(_ posture: DevicePosture) {
+        let wasHasSettled = hasSettled
         hasSettled = true
         guard posture != detectedPosture else { return }
+        if wasHasSettled, screenMode == .stand, posture == .closed {
+            foldHandoffCount += 1
+        }
         detectedPosture = posture
         manualMode = nil
     }
 
+    /// 수동 전환: 플래닝 ↔ (접혀 있으면 한눈 모드, 아니면 스탠드)
     func toggleMode() {
-        manualMode = screenMode == .stand ? .planning : .stand
+        switch screenMode {
+        case .stand, .glance: manualMode = .planning
+        case .planning: manualMode = detectedPosture == .closed ? .glance : .stand
+        }
     }
 
     func openSettings() {
