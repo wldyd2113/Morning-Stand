@@ -71,6 +71,8 @@ nonisolated enum AppConstants {
         static let liveActivityAnyTime = "-liveActivityAnyTime"
         /// `-planningTab routes|nearby|history`: 펼침 화면에서 처음 보여줄 탭
         static let planningTab = "-planningTab"
+        /// `-motion resting|handheld`: 움직임 상태를 고정한다 (센서가 없는 시뮬레이터 확인용)
+        static let motion = "-motion"
     }
 
     enum AccessibilityID {

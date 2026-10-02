@@ -31,6 +31,21 @@ nonisolated enum PolicyConstants {
     enum Posture {
         /// 창 너비가 이 값(pt) 이상이면 안쪽 큰 화면으로 본다 (커버 화면은 이보다 좁다)
         static let innerDisplayMinimumWidth: CGFloat = 600
+        /// 자세가 바뀐 뒤 이만큼 그대로면 확정한다 (접는 도중 화면이 여러 번 바뀌지 않게)
+        static let settleDelay: Duration = .milliseconds(600)
+
+        // 움직임 판단 기준. 실제 기기에서 다시 맞춘다
+        /// 센서 측정 간격
+        static let motionSampleIntervalSeconds: TimeInterval = 0.1
+        /// 이 값 이하의 가속도(g)·회전(rad/s)이 이어지면 놓여 있다고 본다
+        static let restingAccelerationG = 0.01
+        static let restingRotationRadiansPerSecond = 0.03
+        static let restingDurationSeconds: TimeInterval = 2
+        /// 이 값 이상의 가속도(g)·회전(rad/s)이 이어지면 손에 들었다고 본다
+        static let handheldAccelerationG = 0.05
+        static let handheldRotationRadiansPerSecond = 0.25
+        /// 화면을 한 번 톡 치는 정도로는 바뀌지 않게 이만큼 이어져야 한다
+        static let handheldDurationSeconds: TimeInterval = 1
     }
 
     enum Walking {

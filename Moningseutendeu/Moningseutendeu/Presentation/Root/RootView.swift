@@ -27,6 +27,8 @@ struct RootView: View {
                 }
         }
         .ignoresSafeArea(.keyboard)
+        .task { await rootViewModel.observeMotion() }
+        .task(id: rootViewModel.candidatePosture) { await rootViewModel.settlePosture() }
         .sheet(isPresented: $rootViewModel.isSettingsPresented) {
             SettingsView(
                 stopSearchViewModel: dependencies.makeStopSearchViewModel(),

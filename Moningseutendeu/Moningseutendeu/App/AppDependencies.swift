@@ -13,6 +13,8 @@ struct AppDependencies {
     let clock: any Clock<Duration>
     let calendar: Calendar
     let forcedPosture: DevicePosture?
+    /// 움직임 상태 (실기기는 CoreMotion, 시뮬레이터·Preview는 고정값)
+    var motionProvider: any MotionStateProviding = StaticMotionStateProvider(state: .unavailable)
     var initialPlanningTab: PlanningTab = .routes
     let themeOverride: DisplayTheme?
     let snapshotPublisher: any WidgetSnapshotPublishing
@@ -29,6 +31,12 @@ struct AppDependencies {
         var dependencies = makeLive(arguments: arguments)
         dependencies.showsLiveActivityAnyTime = arguments.contains(AppConstants.LaunchArgument.liveActivityAnyTime)
         dependencies.initialPlanningTab = argumentValue(AppConstants.LaunchArgument.planningTab, in: arguments).flatMap(PlanningTab.init(rawValue:)) ?? .routes
+        // 시뮬레이터는 센서가 없어서 -motion으로 흉내 낸다. 없으면 실기기 CoreMotion을 쓴다
+        if let motion = argumentValue(AppConstants.LaunchArgument.motion, in: arguments).flatMap(MotionState.init(rawValue:)) {
+            dependencies.motionProvider = StaticMotionStateProvider(state: motion)
+        } else {
+            dependencies.motionProvider = CoreMotionStateProvider()
+        }
         return dependencies
     }
 
@@ -141,7 +149,7 @@ struct AppDependencies {
     // MARK: - ViewModel 팩토리
 
     func makeRootViewModel() -> RootViewModel {
-        RootViewModel(forcedPosture: forcedPosture, initialPlanningTab: initialPlanningTab)
+        RootViewModel(forcedPosture: forcedPosture, initialPlanningTab: initialPlanningTab, motionProvider: motionProvider, clock: clock)
     }
 
     func makeStandViewModel() -> StandViewModel {
