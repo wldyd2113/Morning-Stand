@@ -2,11 +2,16 @@ import Foundation
 
 /// 동작 정책 값 (임계값, 주기, 범위). 단위를 이름에 드러낸다.
 nonisolated enum PolicyConstants {
-    enum Departure {
-        /// 출발까지 이 시간(분) 이상 남으면 "여유"
-        static let relaxedThresholdMinutes = 10
-        /// 출발까지 이 시간(분) 이상 남으면 "곧 출발", 미만이면 "지금 출발"
-        static let soonThresholdMinutes = 3
+    enum Widget {
+        /// 위젯 타임라인을 미리 계산하는 길이(분). 스냅샷 크기를 작게 유지한다
+        static let timelineMinutes = 60
+        /// 도착 시각이 이만큼 이상 바뀌어야 위젯을 다시 그린다 (갱신 예산 절약)
+        static let reloadThresholdSeconds: TimeInterval = 60
+    }
+
+    enum LiveActivity {
+        /// 차량 도착 후 이 시간이 지나도록 갱신이 없으면 오래된 정보로 표시된다
+        static let staleAfterArrivalSeconds: TimeInterval = 60
     }
 
     enum NightTheme {

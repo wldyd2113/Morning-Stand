@@ -13,14 +13,23 @@ struct AppDependencies {
     let calendar: Calendar
     let forcedPosture: DevicePosture?
     let themeOverride: DisplayTheme?
+    let snapshotPublisher: any WidgetSnapshotPublishing
+    let liveActivity: any LiveActivityControlling
+    var showsLiveActivityAnyTime = false
 
     /// 앱 실행용 구성. `-useSampleData` 또는 `-standScenario`가 있으면 샘플 데이터를 쓴다.
     static func live(arguments: [String] = ProcessInfo.processInfo.arguments) -> AppDependencies {
+        var dependencies = makeLive(arguments: arguments)
+        dependencies.showsLiveActivityAnyTime = arguments.contains(AppConstants.LaunchArgument.liveActivityAnyTime)
+        return dependencies
+    }
+
+    private static func makeLive(arguments: [String]) -> AppDependencies {
         let posture = argumentValue(AppConstants.LaunchArgument.posture, in: arguments).flatMap(DevicePosture.init(rawValue:))
         let theme = argumentValue(AppConstants.LaunchArgument.theme, in: arguments).flatMap(DisplayTheme.init(rawValue:))
         let scenario = argumentValue(AppConstants.LaunchArgument.standScenario, in: arguments).flatMap(StandScenario.init(rawValue:))
         if arguments.contains(AppConstants.LaunchArgument.useSampleData) || scenario != nil {
-            return sample(scenario: scenario ?? .soon, dateProvider: SystemDateProvider(), posture: posture, theme: theme)
+            return sample(scenario: scenario ?? .soon, dateProvider: SystemDateProvider(), posture: posture, theme: theme, publishesToSystem: true)
         }
 
         let dateProvider = SystemDateProvider()
@@ -39,17 +48,19 @@ struct AppDependencies {
             clock: ContinuousClock(),
             calendar: calendar,
             forcedPosture: posture,
-            themeOverride: theme
+            themeOverride: theme,
+            snapshotPublisher: WidgetCenterSnapshotPublisher(),
+            liveActivity: DepartureLiveActivityController()
         )
     }
 
     /// Preview용 구성. 시각을 시안과 같은 2026-09-30(수) 07:42 KST로 고정한다.
     static func preview(scenario: StandScenario = .soon, posture: DevicePosture? = nil, theme: DisplayTheme? = nil) -> AppDependencies {
         let fixedDate = Calendar.seoul.date(from: DateComponents(year: 2026, month: 9, day: 30, hour: 7, minute: 42)) ?? .distantPast
-        return sample(scenario: scenario, dateProvider: FixedDateProvider(now: fixedDate), posture: posture, theme: theme)
+        return sample(scenario: scenario, dateProvider: FixedDateProvider(now: fixedDate), posture: posture, theme: theme, publishesToSystem: false)
     }
 
-    private static func sample(scenario: StandScenario, dateProvider: any DateProvider, posture: DevicePosture?, theme: DisplayTheme?) -> AppDependencies {
+    private static func sample(scenario: StandScenario, dateProvider: any DateProvider, posture: DevicePosture?, theme: DisplayTheme?, publishesToSystem: Bool) -> AppDependencies {
         let clock = ContinuousClock()
         return AppDependencies(
             weatherRepository: SampleWeatherRepository(scenario: scenario, dateProvider: dateProvider, clock: clock),
@@ -62,7 +73,9 @@ struct AppDependencies {
             clock: clock,
             calendar: .seoul,
             forcedPosture: posture,
-            themeOverride: theme
+            themeOverride: theme,
+            snapshotPublisher: publishesToSystem ? WidgetCenterSnapshotPublisher() : NoopWidgetSnapshotPublisher(),
+            liveActivity: publishesToSystem ? DepartureLiveActivityController() : NoopLiveActivityController()
         )
     }
 
@@ -84,7 +97,10 @@ struct AppDependencies {
             dateProvider: dateProvider,
             clock: clock,
             calendar: calendar,
-            themeOverride: themeOverride
+            themeOverride: themeOverride,
+            snapshotPublisher: snapshotPublisher,
+            liveActivity: liveActivity,
+            showsLiveActivityAnyTime: showsLiveActivityAnyTime
         )
     }
 

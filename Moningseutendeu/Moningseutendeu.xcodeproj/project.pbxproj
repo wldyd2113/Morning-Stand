@@ -8,17 +8,51 @@
 
 /* Begin PBXBuildFile section */
 		3B1DA341306D1B8100300035 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 3B1DA340306D1B8100300035 /* Alamofire */; };
+		3B1DA36B306D1D0000300035 /* MorningStandWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 3B1DA362306D1D0000300035 /* MorningStandWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3B1DA36C306D1D0000300035 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3B1DA329306D18B700300035 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3B1DA363306D1D0000300035;
+			remoteInfo = MorningStandWidgets;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3B1DA36A306D1D0000300035 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "";
+			dstSubfolder = PlugIns;
+			files = (
+				3B1DA36B306D1D0000300035 /* MorningStandWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		3B1DA331306D18B700300035 /* Moningseutendeu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moningseutendeu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B1DA350306D1C0000300035 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Base.xcconfig; path = ../Config/Base.xcconfig; sourceTree = SOURCE_ROOT; };
+		3B1DA362306D1D0000300035 /* MorningStandWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MorningStandWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3B1DA333306D18B700300035 /* Moningseutendeu */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Moningseutendeu;
+			sourceTree = "<group>";
+		};
+		3B1DA360306D1D0000300035 /* MorningStandWidgets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MorningStandWidgets;
+			sourceTree = "<group>";
+		};
+		3B1DA361306D1D0000300035 /* SharedAppGroup */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SharedAppGroup;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -30,6 +64,11 @@
 				3B1DA341306D1B8100300035 /* Alamofire in Frameworks */,
 			);
 		};
+		3B1DA365306D1D0000300035 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -38,6 +77,8 @@
 			children = (
 				3B1DA350306D1C0000300035 /* Base.xcconfig */,
 				3B1DA333306D18B700300035 /* Moningseutendeu */,
+				3B1DA361306D1D0000300035 /* SharedAppGroup */,
+				3B1DA360306D1D0000300035 /* MorningStandWidgets */,
 				3B1DA332306D18B700300035 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -46,6 +87,7 @@
 			isa = PBXGroup;
 			children = (
 				3B1DA331306D18B700300035 /* Moningseutendeu.app */,
+				3B1DA362306D1D0000300035 /* MorningStandWidgets.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -60,11 +102,16 @@
 				3B1DA32D306D18B700300035 /* Sources */,
 				3B1DA32E306D18B700300035 /* Frameworks */,
 				3B1DA32F306D18B700300035 /* Resources */,
+				3B1DA36A306D1D0000300035 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
+			dependencies = (
+				3B1DA36D306D1D0000300035 /* PBXTargetDependency */,
+			);
 			fileSystemSynchronizedGroups = (
 				3B1DA333306D18B700300035 /* Moningseutendeu */,
+				3B1DA361306D1D0000300035 /* SharedAppGroup */,
 			);
 			name = Moningseutendeu;
 			packageProductDependencies = (
@@ -73,6 +120,25 @@
 			productName = Moningseutendeu;
 			productReference = 3B1DA331306D18B700300035 /* Moningseutendeu.app */;
 			productType = "com.apple.product-type.application";
+		};
+		3B1DA363306D1D0000300035 /* MorningStandWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3B1DA367306D1D0000300035 /* Build configuration list for PBXNativeTarget "MorningStandWidgets" */;
+			buildPhases = (
+				3B1DA364306D1D0000300035 /* Sources */,
+				3B1DA365306D1D0000300035 /* Frameworks */,
+				3B1DA366306D1D0000300035 /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				3B1DA360306D1D0000300035 /* MorningStandWidgets */,
+				3B1DA361306D1D0000300035 /* SharedAppGroup */,
+			);
+			name = MorningStandWidgets;
+			productName = MorningStandWidgets;
+			productReference = 3B1DA362306D1D0000300035 /* MorningStandWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -85,6 +151,9 @@
 				LastUpgradeCheck = 2710;
 				TargetAttributes = {
 					3B1DA330306D18B700300035 = {
+						CreatedOnToolsVersion = 27.1;
+					};
+					3B1DA363306D1D0000300035 = {
 						CreatedOnToolsVersion = 27.1;
 					};
 				};
@@ -107,12 +176,18 @@
 			projectRoot = "";
 			targets = (
 				3B1DA330306D18B700300035 /* Moningseutendeu */,
+				3B1DA363306D1D0000300035 /* MorningStandWidgets */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		3B1DA32F306D18B700300035 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		3B1DA366306D1D0000300035 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
 			);
@@ -125,7 +200,20 @@
 			files = (
 			);
 		};
+		3B1DA364306D1D0000300035 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3B1DA36D306D1D0000300035 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3B1DA363306D1D0000300035 /* MorningStandWidgets */;
+			targetProxy = 3B1DA36C306D1D0000300035 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		3B1DA33A306D18B800300035 /* Debug configuration for PBXProject "Moningseutendeu" */ = {
@@ -255,12 +343,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Moningseutendeu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5CKD3N685F;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Moningseutendeu-Info.plist";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -289,12 +379,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Moningseutendeu.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5CKD3N685F;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Moningseutendeu-Info.plist";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -307,6 +399,64 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jiyong.Moningseutendeu;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		3B1DA368306D1D0000300035 /* Debug configuration for PBXNativeTarget "MorningStandWidgets" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MorningStandWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5CKD3N685F;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "MorningStandWidgets-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "모닝스탠드";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jiyong.Moningseutendeu.MorningStandWidgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3B1DA369306D1D0000300035 /* Release configuration for PBXNativeTarget "MorningStandWidgets" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MorningStandWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5CKD3N685F;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "MorningStandWidgets-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "모닝스탠드";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jiyong.Moningseutendeu.MorningStandWidgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
@@ -333,6 +483,14 @@
 			buildConfigurations = (
 				3B1DA33D306D18B800300035 /* Debug configuration for PBXNativeTarget "Moningseutendeu" */,
 				3B1DA33E306D18B800300035 /* Release configuration for PBXNativeTarget "Moningseutendeu" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		3B1DA367306D1D0000300035 /* Build configuration list for PBXNativeTarget "MorningStandWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3B1DA368306D1D0000300035 /* Debug configuration for PBXNativeTarget "MorningStandWidgets" */,
+				3B1DA369306D1D0000300035 /* Release configuration for PBXNativeTarget "MorningStandWidgets" */,
 			);
 			defaultConfigurationName = Release;
 		};

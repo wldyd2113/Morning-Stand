@@ -30,6 +30,7 @@ nonisolated enum AppConstants {
         static let subsystem = "com.jiyong.Moningseutendeu"
         static let networkCategory = "network"
         static let configurationCategory = "configuration"
+        static let liveActivityCategory = "liveActivity"
     }
 
     enum LaunchArgument {
@@ -41,6 +42,8 @@ nonisolated enum AppConstants {
         static let theme = "-theme"
         /// 실제 API 대신 샘플 데이터를 쓴다 (UI 테스트·데모)
         static let useSampleData = "-useSampleData"
+        /// 출근 시간대가 아니어도 Live Activity를 띄운다 (확인·시연용)
+        static let liveActivityAnyTime = "-liveActivityAnyTime"
     }
 
     enum AccessibilityID {

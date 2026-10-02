@@ -6,7 +6,7 @@ enum DesignTokens {
     // MARK: - 색
 
     enum Palette {
-        static let accent = Color(hex: 0xF4B04F)
+        static let accent = SharedPalette.accent
         static let accentSoftBackground = Color(hex: 0xF4B04F, opacity: 0.16)
         static let background = Color(hex: 0x000000)
         static let deviceFrame = Color(hex: 0x0A0A0B)
@@ -40,10 +40,10 @@ enum DesignTokens {
     }
 
     enum Hero {
-        static let relaxed = Color(hex: 0x3DD68C)
-        static let soon = Color(hex: 0xFFD23F)
-        static let now = Color(hex: 0xFF5A4E)
-        static let missed = Color(hex: 0x3A3A3E)
+        static let relaxed = SharedPalette.heroRelaxed
+        static let soon = SharedPalette.heroSoon
+        static let now = SharedPalette.heroNow
+        static let missed = SharedPalette.heroMissed
         static let foregroundOnColor = Color(hex: 0x000000)
         static let foregroundOnMissed = Color(hex: 0xF5F5F7)
         static let badgeOnColor = Color(hex: 0x000000, opacity: 0.14)
@@ -57,10 +57,10 @@ enum DesignTokens {
     }
 
     enum AirQuality {
-        static let good = Color(hex: 0x4DA3FF)
-        static let moderate = Color(hex: 0x3DD68C)
-        static let bad = Color(hex: 0xFF9F2E)
-        static let veryBad = Color(hex: 0xFF5A4E)
+        static let good = SharedPalette.airGood
+        static let moderate = SharedPalette.airModerate
+        static let bad = SharedPalette.airBad
+        static let veryBad = SharedPalette.airVeryBad
     }
 
     enum Segment {

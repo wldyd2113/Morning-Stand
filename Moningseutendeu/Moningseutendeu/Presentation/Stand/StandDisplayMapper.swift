@@ -9,14 +9,15 @@ nonisolated enum StandDisplayMapper {
         departures: SectionState<DepartureBoard>,
         theme: DisplayTheme,
         now: Date,
-        calendar: Calendar
+        calendar: Calendar,
+        planDeparture: PlanDepartureUseCase = PlanDepartureUseCase()
     ) -> Model {
         Model(
             theme: theme,
             dateText: DisplayFormatter.dateText(for: now, calendar: calendar),
             weather: weatherPanel(weather, theme: theme),
             banner: banner(weather: weather, departures: departures, now: now, calendar: calendar),
-            hero: hero(departures, calendar: calendar),
+            hero: hero(departures, calendar: calendar, planDeparture: planDeparture),
             otherRoutes: otherRoutes(departures, calendar: calendar),
             footer: footer(weather: weather, departures: departures)
         )
@@ -147,12 +148,12 @@ nonisolated enum StandDisplayMapper {
 
     // MARK: - 히어로
 
-    static func hero(_ state: SectionState<DepartureBoard>, calendar: Calendar) -> Model.Hero {
+    static func hero(_ state: SectionState<DepartureBoard>, calendar: Calendar, planDeparture: PlanDepartureUseCase = PlanDepartureUseCase()) -> Model.Hero {
         switch state {
         case .idle, .loading:
             return .placeholder
         case .loaded(let board, _), .stale(let board, _, .refreshFailed):
-            return hero(for: board)
+            return hero(for: board, planDeparture: planDeparture)
         case .stale(_, let fetchedAt, .offline):
             let time = TimeOfDay(date: fetchedAt, calendar: calendar).text
             return .notice(offlineHero(title: String(localized: "\(time) 이후 정보를 받지 못했어요")))
@@ -187,7 +188,7 @@ nonisolated enum StandDisplayMapper {
         )
     }
 
-    static func hero(for board: DepartureBoard) -> Model.Hero {
+    static func hero(for board: DepartureBoard, planDeparture: PlanDepartureUseCase = PlanDepartureUseCase()) -> Model.Hero {
         let primary = board.primary
         let routeTitle = routeTitle(primary)
         switch primary.status {
@@ -211,7 +212,7 @@ nonisolated enum StandDisplayMapper {
                 detail: String(localized: "남은 시간을 알 수 없어 출발 시각을 계산하지 않았어요")
             ))
         case .arriving(let minutes, let nextMinutes):
-            let plan = PlanDepartureUseCase()(arrivalMinutes: minutes, nextArrivalMinutes: nextMinutes, walkMinutes: board.walkMinutes)
+            let plan = planDeparture(arrivalMinutes: minutes, nextArrivalMinutes: nextMinutes, walkMinutes: board.walkMinutes)
             return .departure(departureHero(plan: plan, arrivalMinutes: minutes, board: board, routeTitle: routeTitle))
         }
     }

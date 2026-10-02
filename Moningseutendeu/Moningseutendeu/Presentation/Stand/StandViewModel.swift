@@ -14,6 +14,10 @@ final class StandViewModel {
     @ObservationIgnored private let clock: any Clock<Duration>
     @ObservationIgnored private let calendar: Calendar
     @ObservationIgnored private let themeOverride: DisplayTheme?
+    @ObservationIgnored private let planDeparture: PlanDepartureUseCase
+    @ObservationIgnored private let snapshotPublisher: any WidgetSnapshotPublishing
+    @ObservationIgnored private let liveActivity: any LiveActivityControlling
+    @ObservationIgnored private let showsLiveActivityAnyTime: Bool
 
     init(
         weatherRepository: any WeatherRepository,
@@ -21,8 +25,16 @@ final class StandViewModel {
         dateProvider: any DateProvider,
         clock: any Clock<Duration>,
         calendar: Calendar = .seoul,
-        themeOverride: DisplayTheme? = nil
+        themeOverride: DisplayTheme? = nil,
+        planDeparture: PlanDepartureUseCase = PlanDepartureUseCase(),
+        snapshotPublisher: any WidgetSnapshotPublishing = NoopWidgetSnapshotPublisher(),
+        liveActivity: any LiveActivityControlling = NoopLiveActivityController(),
+        showsLiveActivityAnyTime: Bool = false
     ) {
+        self.showsLiveActivityAnyTime = showsLiveActivityAnyTime
+        self.planDeparture = planDeparture
+        self.snapshotPublisher = snapshotPublisher
+        self.liveActivity = liveActivity
         self.weatherRepository = weatherRepository
         self.departureRepository = departureRepository
         self.dateProvider = dateProvider
@@ -37,7 +49,7 @@ final class StandViewModel {
     }
 
     var display: StandDisplayModel {
-        StandDisplayMapper.make(weather: weather, departures: departures, theme: theme, now: now, calendar: calendar)
+        StandDisplayMapper.make(weather: weather, departures: departures, theme: theme, now: now, calendar: calendar, planDeparture: planDeparture)
     }
 
     func clock(at date: Date) -> StandDisplayModel.Clock {
@@ -69,9 +81,23 @@ final class StandViewModel {
 
     /// 서울 버스 일일 1,000건 한도 때문에 출근 시간대에만 자주 갱신한다.
     nonisolated static func refreshInterval(at date: Date, calendar: Calendar) -> Duration {
+        isCommuteHour(date, calendar: calendar) ? PolicyConstants.Polling.commuteInterval : PolicyConstants.Polling.offPeakInterval
+    }
+
+    nonisolated static func isCommuteHour(_ date: Date, calendar: Calendar) -> Bool {
         let hour = calendar.component(.hour, from: date)
-        let isCommute = hour >= PolicyConstants.Polling.commuteStartHour && hour < PolicyConstants.Polling.commuteEndHour
-        return isCommute ? PolicyConstants.Polling.commuteInterval : PolicyConstants.Polling.offPeakInterval
+        return hour >= PolicyConstants.Polling.commuteStartHour && hour < PolicyConstants.Polling.commuteEndHour
+    }
+
+    /// 불러온 결과를 위젯 스냅샷과 Live Activity에 반영한다. Live Activity는 출근 시간대에만 띄운다.
+    private func publishToSystemSurfaces() async {
+        if let snapshot = DashboardSnapshotMapper.snapshot(weather: weather, departures: departures, theme: theme, now: now, calendar: calendar, planDeparture: planDeparture) {
+            snapshotPublisher.publish(snapshot)
+        }
+        let content = showsLiveActivityAnyTime || Self.isCommuteHour(now, calendar: calendar)
+            ? DashboardSnapshotMapper.liveActivityContent(departures: departures, now: now, planDeparture: planDeparture)
+            : nil
+        await liveActivity.sync(content)
     }
 
     /// 날씨와 도착 정보를 동시에 불러온다. 먼저 끝난 섹션부터 반영하고, 한쪽이 실패해도 다른 쪽은 그대로 보여준다.
@@ -97,6 +123,8 @@ final class StandViewModel {
                 }
             }
         }
+        guard !Task.isCancelled else { return }
+        await publishToSystemSurfaces()
     }
 
     private enum SectionResult: Sendable {
