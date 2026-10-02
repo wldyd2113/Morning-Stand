@@ -8,11 +8,14 @@ final class RootViewModel {
     private(set) var detectedPosture: DevicePosture = .flat
     private(set) var manualMode: ScreenMode?
     var isSettingsPresented = false
+    /// 펼침 화면에서 고른 탭. 스탠드로 갔다 와도 유지한다
+    var planningTab: PlanningTab = .routes
 
     @ObservationIgnored private let forcedPosture: DevicePosture?
 
-    init(forcedPosture: DevicePosture? = nil) {
+    init(forcedPosture: DevicePosture? = nil, initialPlanningTab: PlanningTab = .routes) {
         self.forcedPosture = forcedPosture
+        self.planningTab = initialPlanningTab
         if let forcedPosture { detectedPosture = forcedPosture }
     }
 

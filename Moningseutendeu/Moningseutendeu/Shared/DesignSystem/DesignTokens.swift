@@ -37,6 +37,8 @@ enum DesignTokens {
         static let sheetHandle = Color(hex: 0x48484A)
         static let sheetShadow = Color(hex: 0x000000, opacity: 0.5)
         static let liveIndicator = Color(hex: 0x3DD68C)
+        /// 오류 문구, "놓침" 표시. 어두운 배경에서 잘 보이는 빨강
+        static let error = SharedPalette.heroNow
     }
 
     enum Hero {
@@ -148,5 +150,18 @@ enum DesignTokens {
         static let switchToPlanning = "rectangle.split.2x1"
         static let switchToStand = "rectangle.split.1x2"
         static let appIcon = "sunrise.fill"
+        static let location = "location.fill"
+        static let home = "house.fill"
+        static let walk = "figure.walk"
+        static let nearbyTab = "mappin.and.ellipse"
+        static let historyTab = "chart.bar.xaxis"
+        static let routeTab = "arrow.triangle.turn.up.right.diamond.fill"
+        static let missed = "exclamationmark.circle.fill"
+        static let onTime = "circle.fill"
+        static let trash = "trash"
+        static let door = "door.left.hand.open"
+        static let close = "xmark.circle.fill"
+        static let bus = "bus.fill"
+        static let refresh = "arrow.clockwise"
     }
 }

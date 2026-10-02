@@ -35,6 +35,29 @@ nonisolated struct DefaultTransitStopRepository: TransitStopRepository {
         return arrivals.value.map(\.key)
     }
 
+    /// 서울 버스 주변 정류소. 같은 자리에서 다시 찾으면 캐시를 쓰도록 좌표를 반올림해 키를 만든다.
+    func nearbyStops(around coordinate: Coordinate, radiusMeters: Int) async throws -> [TransitStop] {
+        typealias Keys = APIConstants.SeoulBus
+        let requester = requester
+        let precision = PolicyConstants.Location.cacheCoordinateFractionDigits
+        let key = "bus.nearby.\(coordinate.latitude.formatted(.number.precision(.fractionLength(precision)))).\(coordinate.longitude.formatted(.number.precision(.fractionLength(precision)))).\(radiusMeters)"
+        let result = try await fetcher.fetch(key: key, api: .seoulBus, ttl: PolicyConstants.CacheTTL.nearbyStops) {
+            try await requester.seoulBus(
+                path: Keys.stationByPositionPath,
+                query: [
+                    // x = 경도, y = 위도
+                    Keys.positionLongitude: "\(coordinate.longitude)",
+                    Keys.positionLatitude: "\(coordinate.latitude)",
+                    Keys.radius: "\(radiusMeters)",
+                ],
+                as: SeoulBusNearbyStationDTO.self
+            )
+        }
+        return result.value
+            .compactMap { SeoulBusMapper.nearbyStop($0) }
+            .sorted { ($0.distanceMeters ?? .max) < ($1.distanceMeters ?? .max) }
+    }
+
     private var loader: ArrivalLoader {
         ArrivalLoader(requester: requester, fetcher: fetcher, dateProvider: dateProvider, calendar: calendar)
     }

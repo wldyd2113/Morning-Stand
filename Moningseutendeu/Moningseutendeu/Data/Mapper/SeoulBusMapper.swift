@@ -58,7 +58,7 @@ nonisolated enum SeoulBusMapper {
     /// `tmX`는 경도, `tmY`는 위도 (이름과 달리 WGS84)
     static func stop(_ dto: SeoulBusStationDTO) -> TransitStop? {
         // 정류소 번호가 "0"인 곳(경기 정류소 등)은 도착 조회를 할 수 없어서 뺀다
-        guard let arsId = dto.arsId, arsId != "0", let name = dto.stNm else { return nil }
+        guard let arsId = dto.arsId, arsId != Constants.unavailableArsID, let name = dto.stNm else { return nil }
         var coordinate: Coordinate?
         if let longitude = dto.tmX.flatMap(Double.init), let latitude = dto.tmY.flatMap(Double.init) {
             coordinate = Coordinate(latitude: latitude, longitude: longitude)
@@ -70,6 +70,27 @@ nonisolated enum SeoulBusMapper {
             direction: "",
             distanceMeters: nil,
             estimatedWalkMinutes: PolicyConstants.Walking.defaultMinutes,
+            routeNames: [],
+            coordinate: coordinate
+        )
+    }
+
+    /// 주변 정류소. `gpsX`는 경도, `gpsY`는 위도, `dist`는 요청 좌표에서의 직선거리(m).
+    /// 도보 시간은 직선거리로 어림한 값이고, 즐겨찾기에 넣을 때 지도 경로로 다시 계산한다.
+    static func nearbyStop(_ dto: SeoulBusNearbyStationDTO, estimateWalk: EstimateWalkingTimeUseCase = EstimateWalkingTimeUseCase()) -> TransitStop? {
+        guard let arsId = dto.arsId, arsId != Constants.unavailableArsID, let name = dto.stationNm, !name.isEmpty else { return nil }
+        var coordinate: Coordinate?
+        if let longitude = dto.gpsX.flatMap(Double.init), let latitude = dto.gpsY.flatMap(Double.init) {
+            coordinate = Coordinate(latitude: latitude, longitude: longitude)
+        }
+        let distance = dto.dist.flatMap(Double.init)
+        return TransitStop(
+            id: arsId,
+            name: name,
+            kind: .bus,
+            direction: "",
+            distanceMeters: distance.map { Int($0.rounded()) },
+            estimatedWalkMinutes: distance.map { estimateWalk(distanceMeters: $0) } ?? PolicyConstants.Walking.defaultMinutes,
             routeNames: [],
             coordinate: coordinate
         )

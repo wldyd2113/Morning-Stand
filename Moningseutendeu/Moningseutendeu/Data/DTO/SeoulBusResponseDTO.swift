@@ -54,6 +54,37 @@ nonisolated struct SeoulBusStationDTO: Decodable, Sendable, Equatable {
     }
 }
 
+/// 좌표 기반 주변 정류소 (`getStationByPos`).
+/// - Note: 2026-10-02 실제 응답으로 확인했다 (Fixtures/seoul_bus_station_by_pos_normal.json).
+///   이름 검색과 달리 이름이 `stationNm`, 좌표가 `gpsX`(경도)/`gpsY`(위도), 거리가 `dist`(m, 문자열)다.
+///   미정차 정류소는 `arsId`가 `"0"`으로 온다.
+nonisolated struct SeoulBusNearbyStationDTO: Decodable, Sendable, Equatable {
+    let arsId: String?
+    let stationNm: String?
+    let gpsX: String?
+    let gpsY: String?
+    let dist: String?
+
+    enum CodingKeys: String, CodingKey { case arsId, stationNm, gpsX, gpsY, dist }
+
+    init(arsId: String?, stationNm: String?, gpsX: String?, gpsY: String?, dist: String?) {
+        self.arsId = arsId
+        self.stationNm = stationNm
+        self.gpsX = gpsX
+        self.gpsY = gpsY
+        self.dist = dist
+    }
+
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        arsId = container.flexibleString(forKey: .arsId)
+        stationNm = container.flexibleString(forKey: .stationNm)
+        gpsX = container.flexibleString(forKey: .gpsX)
+        gpsY = container.flexibleString(forKey: .gpsY)
+        dist = container.flexibleString(forKey: .dist)
+    }
+}
+
 /// 정류소별 노선 도착 정보.
 nonisolated struct SeoulBusArrivalDTO: Decodable, Sendable, Equatable {
     let rtNm: String?

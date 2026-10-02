@@ -1,7 +1,7 @@
 import Foundation
 
 /// 기상청(현재·예보) + 에어코리아(미세먼지)를 합쳐 현재 날씨를 만든다.
-/// 위치는 첫 번째 즐겨찾기 정류장 좌표, 없으면 기본 좌표(서울시청). 미세먼지가 실패해도 날씨는 보여준다.
+/// 위치는 집 좌표 → 첫 번째 즐겨찾기 정류장 좌표 → 기본 좌표(서울시청) 순으로 쓴다. 미세먼지가 실패해도 날씨는 보여준다.
 nonisolated struct DefaultWeatherRepository: WeatherRepository {
     let requester: PublicAPIRequester
     let fetcher: CachedFetcher
@@ -11,7 +11,7 @@ nonisolated struct DefaultWeatherRepository: WeatherRepository {
 
     func fetchCurrentWeather() async throws -> Timestamped<WeatherSummary> {
         let now = dateProvider.now
-        let coordinate = settings.favoriteStops().first?.coordinate ?? PolicyConstants.DefaultLocation.coordinate
+        let coordinate = settings.homeLocation() ?? settings.favoriteStops().first?.coordinate ?? PolicyConstants.DefaultLocation.coordinate
         let grid = KMAGridConverter.gridPoint(for: coordinate)
         let stationName = settings.airQualityStationName()
 

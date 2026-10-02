@@ -35,8 +35,9 @@ nonisolated enum PolicyConstants {
 
     enum Walking {
         static let defaultMinutes = 5
-        static let minimumMinutes = 1
-        static let maximumMinutes = 30
+        /// 범위는 Domain의 `WalkingPolicy`와 같은 값을 쓴다
+        static let minimumMinutes = WalkingPolicy.standard.minimumMinutes
+        static let maximumMinutes = WalkingPolicy.standard.maximumMinutes
     }
 
     enum Notification {
@@ -60,6 +61,8 @@ nonisolated enum PolicyConstants {
         static let weatherForecast: Duration = .seconds(60 * 60)
         static let airQuality: Duration = .seconds(30 * 60)
         static let stationList: Duration = .seconds(7 * 24 * 60 * 60)
+        /// 주변 정류장은 위치가 같으면 잘 바뀌지 않는다
+        static let nearbyStops: Duration = .seconds(24 * 60 * 60)
         /// 실패했을 때 이보다 오래된 캐시는 보여주지 않는다
         static let staleLimit: Duration = .seconds(3 * 60 * 60)
     }
@@ -75,8 +78,8 @@ nonisolated enum PolicyConstants {
     /// 스탠드 화면 갱신 주기
     enum Polling {
         /// 출근 시간대 (시작 시 이상, 끝 시 미만)
-        static let commuteStartHour = 6
-        static let commuteEndHour = 10
+        static let commuteStartHour = CommuteHourPolicy.standard.startHour
+        static let commuteEndHour = CommuteHourPolicy.standard.endHour
         /// 출근 시간대 갱신 주기
         static let commuteInterval: Duration = .seconds(60)
         /// 그 외 시간대 갱신 주기 (서울 버스 1,000건/일 한도 보호)
@@ -120,6 +123,38 @@ nonisolated enum PolicyConstants {
     enum DefaultLocation {
         /// 위치를 모를 때 쓰는 기본 좌표 (서울시청)
         static let coordinate = Coordinate(latitude: 37.5665, longitude: 126.9780)
+    }
+
+    enum Location {
+        /// 현재 위치를 한 번 받을 때 기다리는 최대 시간
+        static let oneShotTimeout: Duration = .seconds(10)
+        /// 권한 요청 창이 뜬 경우 기다리는 최대 시간
+        static let permissionPromptTimeout: Duration = .seconds(60)
+        /// 이 오차(m) 이내의 위치가 오면 바로 쓴다
+        static let acceptableAccuracyMeters: Double = 100
+        /// 이보다 오차(m)가 크면(대략적 위치) 주변 정류장 찾기에 쓰지 않는다. 날씨에는 쓴다
+        static let nearbySearchMaxAccuracyMeters: Double = 500
+        /// 주변 정류장 검색 반경(m)
+        static let nearbyRadiusMeters = 500
+        /// 주변 정류장 캐시 키에 쓰는 좌표 소수 자릿수 (3자리 ≈ 100m)
+        static let cacheCoordinateFractionDigits = 3
+        /// 주변 정류장 목록에 보여줄 최대 개수
+        static let nearbyMaxResults = 15
+    }
+
+    /// 지역 감시 (집을 나섬 · 정류장 근처)
+    enum RegionMonitor {
+        /// 집 범위 반경(m). 너무 작으면 실내 GPS 흔들림에 "나감"이 잘못 잡힌다
+        static let homeRadiusMeters: Double = 150
+        /// 정류장 근처 반경(m)
+        static let stopRadiusMeters: Double = 100
+    }
+
+    enum History {
+        /// 통계에 쓰는 기간(일)
+        static let lookbackDays = 28
+        /// 출발 시각 차트 위아래 여유(분)
+        static let chartAxisPaddingMinutes = 10
     }
 
     enum Search {

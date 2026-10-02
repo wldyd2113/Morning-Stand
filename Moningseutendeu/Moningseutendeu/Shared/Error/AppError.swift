@@ -14,6 +14,14 @@ nonisolated enum AppError: Error, Sendable, Equatable {
     case rateLimited
     /// 즐겨찾기 정류장 등 필요한 설정이 없음
     case notConfigured
+    /// 위치 권한이 없음
+    case locationDenied
+    /// 위치를 받지 못함 (시간 초과, 실내 등)
+    case locationUnavailable
+    /// 지도에서 도보 경로를 받지 못함
+    case routeUnavailable
+    /// 기기 안 저장소(SwiftData) 읽기·쓰기 실패
+    case persistence
     case unknown
 
     init(_ error: any Error) {
@@ -36,6 +44,10 @@ nonisolated enum AppError: Error, Sendable, Equatable {
         case .apiKeyInvalid: String(localized: "API 키가 아직 등록되지 않았어요")
         case .quotaExceeded, .rateLimited: String(localized: "오늘 조회 한도를 다 썼어요")
         case .notConfigured: String(localized: "설정에서 정류장을 추가해 주세요")
+        case .locationDenied: String(localized: "설정에서 위치 권한을 허용해 주세요")
+        case .locationUnavailable: String(localized: "현재 위치를 찾지 못했어요")
+        case .routeUnavailable: String(localized: "지도에서 도보 경로를 찾지 못했어요")
+        case .persistence: String(localized: "기록을 저장하거나 불러오지 못했어요")
         case .unknown: String(localized: "정보를 불러오지 못했어요")
         }
     }

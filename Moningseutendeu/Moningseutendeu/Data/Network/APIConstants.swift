@@ -58,6 +58,13 @@ nonisolated enum APIConstants {
         static let stationByNamePath = ["stationinfo", "getStationByName"]
         static let arrivalsByStopPath = ["stationinfo", "getStationByUid"]
         static let stationQuery = "stSrch"
+        /// 좌표 기반 주변 정류소. `tmX`/`tmY`는 이름과 달리 WGS84 경도/위도, `radius`는 m
+        static let stationByPositionPath = ["stationinfo", "getStationByPos"]
+        static let positionLongitude = "tmX"
+        static let positionLatitude = "tmY"
+        static let radius = "radius"
+        /// 도착 조회를 할 수 없는 정류소(미정차·경기 정류소)의 번호
+        static let unavailableArsID = "0"
         static let arsId = "arsId"
         static let resultType = "resultType"
         static let resultTypeJSON = "json"

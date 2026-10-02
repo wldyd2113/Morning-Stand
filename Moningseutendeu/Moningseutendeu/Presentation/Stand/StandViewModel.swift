@@ -85,8 +85,7 @@ final class StandViewModel {
     }
 
     nonisolated static func isCommuteHour(_ date: Date, calendar: Calendar) -> Bool {
-        let hour = calendar.component(.hour, from: date)
-        return hour >= PolicyConstants.Polling.commuteStartHour && hour < PolicyConstants.Polling.commuteEndHour
+        CommuteHourPolicy.standard.contains(date, calendar: calendar)
     }
 
     /// 불러온 결과를 위젯 스냅샷과 Live Activity에 반영한다. Live Activity는 출근 시간대에만 띄운다.

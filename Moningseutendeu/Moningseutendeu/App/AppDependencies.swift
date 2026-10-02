@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 
 /// 의존성 조립. 실제 구현과 Preview·UI 테스트용 구성을 한곳에서 만든다.
 struct AppDependencies {
@@ -12,15 +13,22 @@ struct AppDependencies {
     let clock: any Clock<Duration>
     let calendar: Calendar
     let forcedPosture: DevicePosture?
+    var initialPlanningTab: PlanningTab = .routes
     let themeOverride: DisplayTheme?
     let snapshotPublisher: any WidgetSnapshotPublishing
     let liveActivity: any LiveActivityControlling
+    let locationProvider: any LocationProvider
+    let walkingRouteService: any WalkingRouteService
+    let historyRepository: any CommuteHistoryRepository
+    /// 앱 전체에서 하나. 지역 감시 이벤트를 받아 Live Activity 종료·알림·출근 기록을 처리한다
+    let commuteAutomation: CommuteAutomationCoordinator
     var showsLiveActivityAnyTime = false
 
     /// 앱 실행용 구성. `-useSampleData` 또는 `-standScenario`가 있으면 샘플 데이터를 쓴다.
     static func live(arguments: [String] = ProcessInfo.processInfo.arguments) -> AppDependencies {
         var dependencies = makeLive(arguments: arguments)
         dependencies.showsLiveActivityAnyTime = arguments.contains(AppConstants.LaunchArgument.liveActivityAnyTime)
+        dependencies.initialPlanningTab = argumentValue(AppConstants.LaunchArgument.planningTab, in: arguments).flatMap(PlanningTab.init(rawValue:)) ?? .routes
         return dependencies
     }
 
@@ -37,21 +45,50 @@ struct AppDependencies {
         let settings = UserDefaultsSettingsRepository()
         let requester = PublicAPIRequester(apiClient: AlamofireAPIClient(), configuration: SecretsReader.serverConfiguration())
         let fetcher = CachedFetcher(cache: CacheStore(dateProvider: dateProvider), limiter: RateLimiter(dateProvider: dateProvider, calendar: calendar))
+        let clock = ContinuousClock()
+        let departureRepository = DefaultDepartureRepository(requester: requester, fetcher: fetcher, settings: settings, dateProvider: dateProvider, calendar: calendar)
+        let historyRepository = makeHistoryRepository()
+        let liveActivity = DepartureLiveActivityController()
         return AppDependencies(
             weatherRepository: DefaultWeatherRepository(requester: requester, fetcher: fetcher, settings: settings, dateProvider: dateProvider, calendar: calendar),
-            departureRepository: DefaultDepartureRepository(requester: requester, fetcher: fetcher, settings: settings, dateProvider: dateProvider, calendar: calendar),
+            departureRepository: departureRepository,
             commuteRouteRepository: UserDefaultsCommuteRouteRepository(),
             transitStopRepository: DefaultTransitStopRepository(requester: requester, fetcher: fetcher, dateProvider: dateProvider, calendar: calendar),
             airQualityStationRepository: DefaultAirQualityStationRepository(requester: requester, fetcher: fetcher),
             settingsRepository: settings,
             dateProvider: dateProvider,
-            clock: ContinuousClock(),
+            clock: clock,
             calendar: calendar,
             forcedPosture: posture,
             themeOverride: theme,
             snapshotPublisher: WidgetCenterSnapshotPublisher(),
-            liveActivity: DepartureLiveActivityController()
+            liveActivity: liveActivity,
+            locationProvider: CoreLocationProvider(clock: clock),
+            walkingRouteService: MapKitWalkingRouteService(),
+            historyRepository: historyRepository,
+            commuteAutomation: CommuteAutomationCoordinator(
+                settings: settings,
+                monitor: CLMonitorCommuteRegionMonitor(),
+                notifications: UserNotificationScheduler(),
+                departureRepository: departureRepository,
+                historyRepository: historyRepository,
+                liveActivity: liveActivity,
+                dateProvider: dateProvider,
+                calendar: calendar
+            )
         )
+    }
+
+    /// SwiftData 저장소를 열지 못하면(스키마 손상 등) 앱이 멈추지 않도록 메모리 저장소로 대신한다.
+    private static func makeHistoryRepository() -> any CommuteHistoryRepository {
+        do {
+            let container = try CommuteHistoryMigrationPlan.makeContainer(inMemory: false)
+            return SwiftDataCommuteHistoryRepository(store: CommuteRecordStore(modelContainer: container))
+        } catch {
+            Logger(subsystem: AppConstants.Logging.subsystem, category: AppConstants.Logging.historyCategory)
+                .error("출근 기록 저장소를 열지 못함: \(String(describing: error), privacy: .public)")
+            return InMemoryCommuteHistoryRepository()
+        }
     }
 
     /// Preview용 구성. 시각을 시안과 같은 2026-09-30(수) 07:42 KST로 고정한다.
@@ -62,20 +99,37 @@ struct AppDependencies {
 
     private static func sample(scenario: StandScenario, dateProvider: any DateProvider, posture: DevicePosture?, theme: DisplayTheme?, publishesToSystem: Bool) -> AppDependencies {
         let clock = ContinuousClock()
+        let settings = InMemorySettingsRepository(favorites: SampleTransitStopRepository.favorites)
+        let departureRepository = SampleDepartureRepository(scenario: scenario, dateProvider: dateProvider, clock: clock)
+        let historyRepository = InMemoryCommuteHistoryRepository(records: InMemoryCommuteHistoryRepository.sampleRecords(endingAt: dateProvider.now, calendar: .seoul))
+        let liveActivity: any LiveActivityControlling = publishesToSystem ? DepartureLiveActivityController() : NoopLiveActivityController()
         return AppDependencies(
             weatherRepository: SampleWeatherRepository(scenario: scenario, dateProvider: dateProvider, clock: clock),
-            departureRepository: SampleDepartureRepository(scenario: scenario, dateProvider: dateProvider, clock: clock),
+            departureRepository: departureRepository,
             commuteRouteRepository: SampleCommuteRouteRepository(),
             transitStopRepository: SampleTransitStopRepository(),
             airQualityStationRepository: SampleAirQualityStationRepository(),
-            settingsRepository: InMemorySettingsRepository(favorites: SampleTransitStopRepository.favorites),
+            settingsRepository: settings,
             dateProvider: dateProvider,
             clock: clock,
             calendar: .seoul,
             forcedPosture: posture,
             themeOverride: theme,
             snapshotPublisher: publishesToSystem ? WidgetCenterSnapshotPublisher() : NoopWidgetSnapshotPublisher(),
-            liveActivity: publishesToSystem ? DepartureLiveActivityController() : NoopLiveActivityController()
+            liveActivity: liveActivity,
+            locationProvider: SampleLocationProvider(),
+            walkingRouteService: SampleWalkingRouteService(),
+            historyRepository: historyRepository,
+            commuteAutomation: CommuteAutomationCoordinator(
+                settings: settings,
+                monitor: NoopCommuteRegionMonitor(),
+                notifications: NoopCommuteNotificationScheduler(),
+                departureRepository: departureRepository,
+                historyRepository: historyRepository,
+                liveActivity: liveActivity,
+                dateProvider: dateProvider,
+                calendar: .seoul
+            )
         )
     }
 
@@ -87,7 +141,7 @@ struct AppDependencies {
     // MARK: - ViewModel 팩토리
 
     func makeRootViewModel() -> RootViewModel {
-        RootViewModel(forcedPosture: forcedPosture)
+        RootViewModel(forcedPosture: forcedPosture, initialPlanningTab: initialPlanningTab)
     }
 
     func makeStandViewModel() -> StandViewModel {
@@ -121,6 +175,23 @@ struct AppDependencies {
             calendar: calendar,
             onFinish: onFinish
         )
+    }
+
+    func makeNearbyStopsViewModel() -> NearbyStopsViewModel {
+        NearbyStopsViewModel(
+            stopRepository: transitStopRepository,
+            departureRepository: departureRepository,
+            settings: settingsRepository,
+            locationProvider: locationProvider,
+            walkingRoute: walkingRouteService,
+            automation: commuteAutomation,
+            dateProvider: dateProvider,
+            calendar: calendar
+        )
+    }
+
+    func makeCommuteHistoryViewModel() -> CommuteHistoryViewModel {
+        CommuteHistoryViewModel(repository: historyRepository, automation: commuteAutomation, dateProvider: dateProvider, calendar: calendar)
     }
 
     func makeStopSearchViewModel() -> StopSearchViewModel {

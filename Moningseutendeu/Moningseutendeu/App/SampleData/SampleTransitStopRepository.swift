@@ -3,9 +3,9 @@ import Foundation
 /// 정류장 검색 샘플. 이름에 검색어가 들어간 정류장만 돌려준다.
 nonisolated struct SampleTransitStopRepository: TransitStopRepository {
     static let stops: [TransitStop] = [
-        TransitStop(id: "12-345", name: "연신내역", kind: .bus, direction: "불광역 방면", distanceMeters: 380, estimatedWalkMinutes: 6, routeNames: ["1711", "7212", "720"]),
-        TransitStop(id: "12-346", name: "연신내역", kind: .bus, direction: "구파발역 방면", distanceMeters: 420, estimatedWalkMinutes: 7, routeNames: ["1711", "7211", "701"]),
-        TransitStop(id: "12-512", name: "연신내로데오거리", kind: .bus, direction: "갈현동 방면", distanceMeters: 560, estimatedWalkMinutes: 8, routeNames: ["7022", "9701"]),
+        TransitStop(id: "12-345", name: "연신내역", kind: .bus, direction: "불광역 방면", distanceMeters: 380, estimatedWalkMinutes: 6, routeNames: ["1711", "7212", "720"], coordinate: Coordinate(latitude: 37.6189, longitude: 126.9206)),
+        TransitStop(id: "12-346", name: "연신내역", kind: .bus, direction: "구파발역 방면", distanceMeters: 420, estimatedWalkMinutes: 7, routeNames: ["1711", "7211", "701"], coordinate: Coordinate(latitude: 37.6193, longitude: 126.9214)),
+        TransitStop(id: "12-512", name: "연신내로데오거리", kind: .bus, direction: "갈현동 방면", distanceMeters: 560, estimatedWalkMinutes: 8, routeNames: ["7022", "9701"], coordinate: Coordinate(latitude: 37.6178, longitude: 126.9187)),
         TransitStop(id: "321", name: "연신내역", kind: .subway, direction: "3호선", distanceMeters: 350, estimatedWalkMinutes: 5, routeNames: ["3호선 오금행", "3호선 대화행"]),
         TransitStop(id: "614", name: "연신내역", kind: .subway, direction: "6호선", distanceMeters: 400, estimatedWalkMinutes: 6, routeNames: ["6호선 응암순환"]),
     ]
@@ -26,5 +26,9 @@ nonisolated struct SampleTransitStopRepository: TransitStopRepository {
 
     func routeNames(for stop: TransitStop) async throws -> [String] {
         stop.routeNames
+    }
+
+    func nearbyStops(around coordinate: Coordinate, radiusMeters: Int) async throws -> [TransitStop] {
+        Self.stops.filter { $0.kind == .bus }.sorted { ($0.distanceMeters ?? .max) < ($1.distanceMeters ?? .max) }
     }
 }

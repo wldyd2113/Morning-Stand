@@ -13,6 +13,10 @@
 	<string>$(SEOUL_BUS_BASE_URL)</string>
 	<key>SEOUL_SUBWAY_BASE_URL</key>
 	<string>$(SEOUL_SUBWAY_BASE_URL)</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>현재 위치에서 가까운 버스 정류장을 찾고, 집 위치를 정해 날씨와 도보 시간을 계산하는 데 사용합니다.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>집을 나서면 출발 카운트다운을 끝내고 출근을 기록하며, 정류장 근처에 오면 도착 정보를 알려 드리기 위해 사용합니다.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>

@@ -1,10 +1,12 @@
 import SwiftUI
 
-/// 앱 루트. 자세에 따라 스탠드/플래닝 화면을 바꾸고, 설정은 시트로 연다.
+/// 앱 루트. 자세에 따라 스탠드/플래닝(탭: 경로·주변·기록) 화면을 바꾸고, 설정은 시트로 연다.
 struct RootView: View {
     @State private var rootViewModel: RootViewModel
     @State private var standViewModel: StandViewModel
     @State private var planningViewModel: PlanningViewModel
+    @State private var nearbyViewModel: NearbyStopsViewModel
+    @State private var historyViewModel: CommuteHistoryViewModel
     private let dependencies: AppDependencies
 
     init(dependencies: AppDependencies) {
@@ -12,6 +14,8 @@ struct RootView: View {
         _rootViewModel = State(initialValue: dependencies.makeRootViewModel())
         _standViewModel = State(initialValue: dependencies.makeStandViewModel())
         _planningViewModel = State(initialValue: dependencies.makePlanningViewModel())
+        _nearbyViewModel = State(initialValue: dependencies.makeNearbyStopsViewModel())
+        _historyViewModel = State(initialValue: dependencies.makeCommuteHistoryViewModel())
     }
 
     var body: some View {
@@ -39,8 +43,16 @@ struct RootView: View {
             StandView(viewModel: standViewModel)
                 .overlay(alignment: .trailing) { modeToggle(symbol: DesignTokens.Symbol.switchToPlanning) }
         case .planning:
-            PlanningView(viewModel: planningViewModel, onOpenSettings: rootViewModel.openSettings)
-                .overlay(alignment: .bottomTrailing) { modeToggle(symbol: DesignTokens.Symbol.switchToStand) }
+            @Bindable var rootViewModel = rootViewModel
+            PlanningTabView(
+                selection: $rootViewModel.planningTab,
+                planningViewModel: planningViewModel,
+                nearbyViewModel: nearbyViewModel,
+                historyViewModel: historyViewModel,
+                onOpenSettings: rootViewModel.openSettings
+            ) {
+                modeToggle(symbol: DesignTokens.Symbol.switchToStand)
+            }
         }
     }
 

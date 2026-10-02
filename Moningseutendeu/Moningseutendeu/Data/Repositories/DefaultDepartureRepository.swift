@@ -19,6 +19,13 @@ nonisolated struct DefaultDepartureRepository: DepartureRepository {
         )
     }
 
+    func arrivals(at stop: TransitStop) async throws -> Timestamped<[RouteArrival]> {
+        var result = try await ArrivalLoader(requester: requester, fetcher: fetcher, dateProvider: dateProvider, calendar: calendar)
+            .arrivals(stopID: stop.id, kind: stop.kind, stopName: stop.name)
+        result.value.sort { Self.sortMinutes($0.status) < Self.sortMinutes($1.status) }
+        return result
+    }
+
     /// 알림 받을 노선 중 첫 번째를 히어로 카드로, 나머지는 도착이 빠른 순으로 "다른 노선"에 둔다.
     static func board(arrivals: [RouteArrival], favorite: FavoriteStop) -> DepartureBoard {
         let primary = favorite.trackedRoutes.lazy.compactMap { tracked in arrivals.first { $0.key == tracked } }.first
@@ -31,11 +38,12 @@ nonisolated struct DefaultDepartureRepository: DepartureRepository {
             )
         let others = arrivals
             .filter { $0.id != primary.id }
-            .sorted { sortMinutes($0.status) < sortMinutes($1.status) }
+            .sorted { Self.sortMinutes($0.status) < Self.sortMinutes($1.status) }
         return DepartureBoard(walkMinutes: favorite.walkMinutes, primary: primary, others: others)
     }
 
-    private static func sortMinutes(_ status: ArrivalStatus) -> Int {
+    /// 도착이 빠른 순으로 정렬할 때의 키. 남은 시간을 모르는 노선은 뒤로 보낸다
+    static func sortMinutes(_ status: ArrivalStatus) -> Int {
         switch status {
         case .arriving(let minutes, _): minutes
         case .message: Int.max - 1

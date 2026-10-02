@@ -11,6 +11,13 @@ nonisolated enum DisplayFormatter {
         date.formatted(baseStyle(calendar).month(.wide).day(.defaultDigits).weekday(.wide))
     }
 
+    /// "9월 30일 (수)"
+    static func shortDateText(for date: Date, calendar: Calendar) -> String {
+        let day = date.formatted(baseStyle(calendar).month(.wide).day(.defaultDigits))
+        let weekday = date.formatted(baseStyle(calendar).weekday(.abbreviated))
+        return "\(day) (\(weekday))"
+    }
+
     /// "오후 6시"
     static func hourText(hour: Int, on day: Date, calendar: Calendar) -> String {
         TimeOfDay(hour: hour, minute: 0)

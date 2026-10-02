@@ -55,6 +55,17 @@ nonisolated struct SampleDepartureRepository: DepartureRepository {
         }
     }
 
+    /// 지도에서 고른 정류장. 시안의 노선을 그 정류장 이름으로 돌려준다.
+    func arrivals(at stop: TransitStop) async throws -> Timestamped<[RouteArrival]> {
+        let routes = [RouteArrival(routeName: "1711", kind: .bus, stopName: stop.name, destination: "불광역 방면", status: .arriving(minutes: 4, nextMinutes: 17))]
+            + Self.others.filter { $0.kind == stop.kind }.map { route in
+                var route = route
+                route.stopName = stop.name
+                return route
+            }
+        return Timestamped(value: routes, fetchedAt: seconds(-12, from: dateProvider.now))
+    }
+
     private func seconds(_ value: Int, from date: Date) -> Date {
         calendar.date(byAdding: .second, value: value, to: date) ?? date
     }
