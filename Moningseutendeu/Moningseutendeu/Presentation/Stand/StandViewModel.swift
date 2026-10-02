@@ -81,7 +81,10 @@ final class StandViewModel {
             stopTitle: favorites.first?.name,
             stopPosition: favorites.count > 1 ? "1/\(favorites.count)" : nil,
             canSwitchStop: favorites.count > 1,
-            reminder: reminderDisplay
+            reminder: reminderDisplay,
+            nextAlarmText: settings.wakeAlarm().nextOccurrence(after: now, calendar: calendar).map {
+                WakeAlarmFormatter.text(for: $0, now: now, calendar: calendar)
+            }
         )
     }
 

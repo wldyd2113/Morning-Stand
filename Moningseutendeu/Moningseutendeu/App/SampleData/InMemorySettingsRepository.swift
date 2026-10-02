@@ -9,6 +9,7 @@ nonisolated final class InMemorySettingsRepository: UserSettingsRepository {
         var home: Coordinate?
         var isAutomationEnabled = false
         var presence: [CommuteRegion: RegionPresence] = [:]
+        var wakeAlarm = WakeAlarmSetting.default
     }
 
     // Mutex로 보호하므로 여러 Task에서 안전하게 읽고 쓴다
@@ -30,6 +31,10 @@ nonisolated final class InMemorySettingsRepository: UserSettingsRepository {
     func setFavoriteStops(_ stops: [FavoriteStop]) {
         state.withLock { $0.favorites = stops }
     }
+
+    func wakeAlarm() -> WakeAlarmSetting { state.withLock { $0.wakeAlarm } }
+
+    func setWakeAlarm(_ setting: WakeAlarmSetting) { state.withLock { $0.wakeAlarm = setting } }
 
     func removeFavoriteStop(id: String) {
         state.withLock { $0.favorites.removeAll { $0.id == id } }

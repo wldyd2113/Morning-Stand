@@ -20,6 +20,7 @@ nonisolated enum AppConstants {
     enum UserDefaultsKey {
         static let favoriteStops = "settings.favoriteStops"
         static let airQualityStation = "settings.airQualityStation"
+        static let wakeAlarm = "settings.wakeAlarm"
         static let commuteRoutes = "settings.commuteRoutes"
         static let routines = "settings.routines"
         static let homeLocation = "settings.homeLocation"
@@ -37,6 +38,7 @@ nonisolated enum AppConstants {
         static let liveActivityCategory = "liveActivity"
         static let locationCategory = "location"
         static let historyCategory = "history"
+        static let alarmCategory = "alarm"
     }
 
     enum RegionMonitor {

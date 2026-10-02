@@ -22,6 +22,17 @@ nonisolated struct UserDefaultsSettingsRepository: UserSettingsRepository {
         save(stops)
     }
 
+    func wakeAlarm() -> WakeAlarmSetting {
+        guard let data = defaults.data(forKey: AppConstants.UserDefaultsKey.wakeAlarm),
+              let setting = try? JSONDecoder().decode(WakeAlarmSetting.self, from: data) else { return .default }
+        return setting
+    }
+
+    func setWakeAlarm(_ setting: WakeAlarmSetting) {
+        guard let data = try? JSONEncoder().encode(setting) else { return }
+        defaults.set(data, forKey: AppConstants.UserDefaultsKey.wakeAlarm)
+    }
+
     func removeFavoriteStop(id: String) {
         save(favoriteStops().filter { $0.id != id })
     }

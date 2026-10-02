@@ -27,6 +27,13 @@ struct StandBottomPanelView: View {
                     StandStopPagerView(controls: controls, onPrevious: viewModel.showPreviousStop, onNext: viewModel.showNextStop)
                     OtherRoutesView(otherRoutes: display.otherRoutes, maxRows: Tokens.Controls.maxRows, onSelect: viewModel.pinRoute(id:))
                     Spacer(minLength: 0)
+                    if let alarm = controls.nextAlarmText {
+                        Label(alarm, systemImage: DesignTokens.Symbol.alarm)
+                            .font(.system(size: Tokens.Controls.stopSubtitleFont * scale, weight: .semibold))
+                            .foregroundStyle(palette.secondary)
+                            .lineLimit(1)
+                            .accessibilityLabel(Text("다음 기상 알람 \(alarm)"))
+                    }
                     DepartureReminderButton(reminder: controls.reminder) {
                         Task { await viewModel.toggleDepartureReminder() }
                     }

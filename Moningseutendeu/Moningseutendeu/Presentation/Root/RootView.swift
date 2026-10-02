@@ -38,7 +38,8 @@ struct RootView: View {
             SettingsView(
                 stopSearchViewModel: dependencies.makeStopSearchViewModel(),
                 airQualityStationViewModel: dependencies.makeAirQualityStationViewModel(),
-                notificationViewModel: dependencies.makeNotificationSettingsViewModel()
+                notificationViewModel: dependencies.makeNotificationSettingsViewModel(),
+                wakeAlarmViewModel: dependencies.makeWakeAlarmSettingsViewModel()
             )
         }
     }

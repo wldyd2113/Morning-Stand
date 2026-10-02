@@ -15,6 +15,9 @@ struct MoningseutendeuApp: App {
     var body: some Scene {
         WindowGroup {
             RootView(dependencies: dependencies)
+            #if DEBUG
+                .task { await WakeAlarmSmokeTest.runIfRequested(dependencies: dependencies) }
+            #endif
         }
     }
 }

@@ -7,7 +7,10 @@ struct SettingsView: View {
     @State private var notificationViewModel: NotificationSettingsViewModel
     @Environment(\.dismiss) private var dismiss
 
-    init(stopSearchViewModel: StopSearchViewModel, airQualityStationViewModel: AirQualityStationViewModel, notificationViewModel: NotificationSettingsViewModel) {
+    @State private var wakeAlarmViewModel: WakeAlarmSettingsViewModel
+
+    init(stopSearchViewModel: StopSearchViewModel, airQualityStationViewModel: AirQualityStationViewModel, notificationViewModel: NotificationSettingsViewModel, wakeAlarmViewModel: WakeAlarmSettingsViewModel) {
+        _wakeAlarmViewModel = State(initialValue: wakeAlarmViewModel)
         _stopSearchViewModel = State(initialValue: stopSearchViewModel)
         _airQualityStationViewModel = State(initialValue: airQualityStationViewModel)
         _notificationViewModel = State(initialValue: notificationViewModel)
@@ -29,6 +32,11 @@ struct SettingsView: View {
                     } label: {
                         Label("미세먼지 측정소", systemImage: DesignTokens.Symbol.airQuality)
                     }
+                }
+                NavigationLink {
+                    WakeAlarmSettingsView(viewModel: wakeAlarmViewModel)
+                } label: {
+                    Label("기상 알람", systemImage: DesignTokens.Symbol.alarm)
                 }
                 NavigationLink {
                     NotificationSettingsView(viewModel: notificationViewModel)
@@ -55,6 +63,7 @@ struct SettingsView: View {
     SettingsView(
         stopSearchViewModel: dependencies.makeStopSearchViewModel(),
         airQualityStationViewModel: dependencies.makeAirQualityStationViewModel(),
-        notificationViewModel: dependencies.makeNotificationSettingsViewModel()
+        notificationViewModel: dependencies.makeNotificationSettingsViewModel(),
+        wakeAlarmViewModel: dependencies.makeWakeAlarmSettingsViewModel()
     )
 }

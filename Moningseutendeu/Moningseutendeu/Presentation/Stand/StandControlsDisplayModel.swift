@@ -8,6 +8,8 @@ nonisolated struct StandControlsDisplayModel: Sendable, Equatable {
     var stopPosition: String?
     var canSwitchStop: Bool
     var reminder: Reminder
+    /// 다음 기상 알람 ("내일 오전 6:50"). 꺼져 있으면 nil
+    var nextAlarmText: String?
 
     nonisolated enum Reminder: Sendable, Equatable {
         /// 남은 시간을 아는 차량이 없어서 예약할 수 없음

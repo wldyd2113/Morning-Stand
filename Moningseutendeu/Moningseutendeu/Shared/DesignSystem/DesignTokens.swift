@@ -145,6 +145,8 @@ enum DesignTokens {
         static let chevronLeft = "chevron.left"
         static let reminderOn = "bell.fill"
         static let reminderOff = "bell"
+        static let alarm = "alarm.fill"
+        static let departure = "figure.walk.departure"
         static let settings = "gearshape"
         static let bell = "bell.badge.fill"
         static let airQuality = "aqi.medium"
