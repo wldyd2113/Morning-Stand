@@ -9,6 +9,8 @@ import Foundation
 /// | 0~2분 | 지금 출발 |
 /// | 음수 | 놓침 → 다음 차량 기준 |
 nonisolated struct PlanDepartureUseCase: Sendable {
+    var policy: DeparturePolicy = .standard
+
     func callAsFunction(arrivalMinutes: Int, nextArrivalMinutes: Int?, walkMinutes: Int) -> DeparturePlan {
         let minutesUntilDeparture = arrivalMinutes - walkMinutes
         guard minutesUntilDeparture >= 0 else {
@@ -20,15 +22,15 @@ nonisolated struct PlanDepartureUseCase: Sendable {
             )
         }
         return DeparturePlan(
-            urgency: Self.urgency(forMinutesUntilDeparture: minutesUntilDeparture),
+            urgency: urgency(forMinutesUntilDeparture: minutesUntilDeparture),
             minutesUntilDeparture: minutesUntilDeparture,
             nextDepartureMinutes: nil
         )
     }
 
-    private static func urgency(forMinutesUntilDeparture minutes: Int) -> DepartureUrgency {
-        if minutes >= PolicyConstants.Departure.relaxedThresholdMinutes { return .relaxed }
-        if minutes >= PolicyConstants.Departure.soonThresholdMinutes { return .soon }
+    private func urgency(forMinutesUntilDeparture minutes: Int) -> DepartureUrgency {
+        if minutes >= policy.relaxedThresholdMinutes { return .relaxed }
+        if minutes >= policy.soonThresholdMinutes { return .soon }
         return .now
     }
 }
