@@ -27,6 +27,10 @@ nonisolated final class InMemorySettingsRepository: UserSettingsRepository {
         }
     }
 
+    func setFavoriteStops(_ stops: [FavoriteStop]) {
+        state.withLock { $0.favorites = stops }
+    }
+
     func removeFavoriteStop(id: String) {
         state.withLock { $0.favorites.removeAll { $0.id == id } }
     }

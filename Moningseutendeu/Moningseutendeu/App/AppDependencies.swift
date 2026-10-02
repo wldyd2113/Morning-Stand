@@ -25,11 +25,14 @@ struct AppDependencies {
     /// 앱 전체에서 하나. 지역 감시 이벤트를 받아 Live Activity 종료·알림·출근 기록을 처리한다
     let commuteAutomation: CommuteAutomationCoordinator
     var showsLiveActivityAnyTime = false
+    /// 출발 알림 등 로컬 알림 (실행용은 UserNotifications, 그 외는 아무것도 안 함)
+    var notificationScheduler: any CommuteNotificationScheduling = NoopCommuteNotificationScheduler()
 
     /// 앱 실행용 구성. `-useSampleData` 또는 `-standScenario`가 있으면 샘플 데이터를 쓴다.
     static func live(arguments: [String] = ProcessInfo.processInfo.arguments) -> AppDependencies {
         var dependencies = makeLive(arguments: arguments)
         dependencies.showsLiveActivityAnyTime = arguments.contains(AppConstants.LaunchArgument.liveActivityAnyTime)
+        dependencies.notificationScheduler = UserNotificationScheduler()
         dependencies.initialPlanningTab = argumentValue(AppConstants.LaunchArgument.planningTab, in: arguments).flatMap(PlanningTab.init(rawValue:)) ?? .routes
         // 시뮬레이터는 센서가 없어서 -motion으로 흉내 낸다. 없으면 실기기 CoreMotion을 쓴다
         if let motion = argumentValue(AppConstants.LaunchArgument.motion, in: arguments).flatMap(MotionState.init(rawValue:)) {
@@ -162,7 +165,9 @@ struct AppDependencies {
             themeOverride: themeOverride,
             snapshotPublisher: snapshotPublisher,
             liveActivity: liveActivity,
-            showsLiveActivityAnyTime: showsLiveActivityAnyTime
+            showsLiveActivityAnyTime: showsLiveActivityAnyTime,
+            settings: settingsRepository,
+            notifications: notificationScheduler
         )
     }
 

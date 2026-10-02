@@ -5,6 +5,8 @@ nonisolated protocol UserSettingsRepository: Sendable {
     func favoriteStops() -> [FavoriteStop]
     func saveFavoriteStop(_ stop: FavoriteStop)
     func removeFavoriteStop(id: String)
+    /// 즐겨찾기 순서를 통째로 바꾼다 (첫 번째가 스탠드 화면에 나온다)
+    func setFavoriteStops(_ stops: [FavoriteStop])
     func airQualityStationName() -> String
     func setAirQualityStationName(_ name: String)
     /// 날씨 격자와 "집을 나섬" 감시에 쓰는 집 좌표. 설정 전이면 `nil`

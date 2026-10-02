@@ -52,6 +52,25 @@ extension DesignTokens {
         }
 
         /// 글자 크기 대비 줄 높이. 큰 숫자는 시안처럼 위아래 여백을 줄인다.
+        /// 반접힘 아래쪽 조작판
+        enum Controls {
+            /// 조작판에서 "다른 노선"은 이 줄 수까지만 (알림 버튼 자리 확보)
+            static let maxRows = 3
+            static let chevronSize: CGFloat = 26
+            static let chevronHitSize: CGFloat = 56
+            static let stopTitleFont: CGFloat = 24
+            static let stopSubtitleFont: CGFloat = 16
+            static let positionFont: CGFloat = 18
+            static let reminderHeight: CGFloat = 64
+            static let reminderFont: CGFloat = 22
+            static let reminderDetailFont: CGFloat = 16
+            static let reminderSpacing: CGFloat = 12
+            /// 카운트다운 카드를 이만큼(pt, 배율 전) 밀면 정류장을 넘긴다
+            static let swipeThreshold: CGFloat = 80
+            /// 조작판 최소 폭 (배율 전)
+            static let minColumnWidth: CGFloat = 340
+        }
+
         enum LineHeight {
             static let clock: CGFloat = 0.84
             static let temperature: CGFloat = 0.9

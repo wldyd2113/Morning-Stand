@@ -6,4 +6,7 @@ nonisolated protocol CommuteNotificationScheduling: Sendable {
     func requestAuthorization() async -> Bool
     /// 정류장 근처에 왔을 때 바로 보여줄 알림. 같은 알림이 있으면 바꾼다
     func notifyNearStop(title: String, body: String) async
+    /// 출발 전 알림을 `date`에 울리도록 예약한다. 같은 알림이 있으면 바꾼다. 예약됐는지 돌려준다
+    func scheduleDepartureReminder(at date: Date, title: String, body: String) async -> Bool
+    func cancelDepartureReminder() async
 }

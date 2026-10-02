@@ -51,6 +51,7 @@ nonisolated enum AppConstants {
 
     enum NotificationID {
         static let nearStop = "commute.nearStop"
+        static let departureReminder = "commute.departureReminder"
     }
 
     enum Persistence {
@@ -81,6 +82,9 @@ nonisolated enum AppConstants {
         static let standClock = "stand.clock"
         static let standHero = "stand.hero"
         static let standOtherRoutes = "stand.otherRoutes"
+        static let standNextStop = "stand.nextStop"
+        static let standPreviousStop = "stand.previousStop"
+        static let standReminder = "stand.reminder"
         static let planningRoot = "planning.root"
         static let modeToggle = "root.modeToggle"
         static let settingsButton = "planning.settings"

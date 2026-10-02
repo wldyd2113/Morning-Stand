@@ -18,6 +18,10 @@ nonisolated struct UserDefaultsSettingsRepository: UserSettingsRepository {
         save(stops)
     }
 
+    func setFavoriteStops(_ stops: [FavoriteStop]) {
+        save(stops)
+    }
+
     func removeFavoriteStop(id: String) {
         save(favoriteStops().filter { $0.id != id })
     }

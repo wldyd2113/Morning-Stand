@@ -26,6 +26,11 @@ struct StandView: View {
         .preferredColorScheme(.dark)
         .accessibilityIdentifier(AppConstants.AccessibilityID.standRoot)
         .task { await viewModel.start() }
+        // 정류장을 넘기거나 노선을 고정하면 다시 불러온다
+        .task(id: viewModel.reloadToken) {
+            guard viewModel.reloadToken > 0 else { return }
+            await viewModel.load()
+        }
     }
 
     /// 힌지 부분. 중요한 숫자가 접히는 곳에 걸치지 않게 비워 두고 얇은 선만 긋는다.

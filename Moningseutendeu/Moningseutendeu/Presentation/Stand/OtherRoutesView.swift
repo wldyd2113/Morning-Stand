@@ -5,6 +5,8 @@ struct OtherRoutesView: View {
     let otherRoutes: StandDisplayModel.OtherRoutes
     /// 보여줄 최대 줄 수. nil이면 전부 (좁은 커버 화면에서 줄이 중간에 잘리지 않게)
     var maxRows: Int?
+    /// 있으면 줄을 누를 수 있다 (반접힘 조작판에서 노선을 카운트다운 카드로 올리기)
+    var onSelect: ((String) -> Void)?
 
     @Environment(\.standPalette) private var palette
     @Environment(\.standScale) private var scale
@@ -24,7 +26,13 @@ struct OtherRoutesView: View {
             case .rows(let rows, let isDimmed):
                 VStack(spacing: 0) {
                     ForEach(maxRows.map { Array(rows.prefix($0)) } ?? rows) { row in
-                        rowView(row)
+                        if let onSelect {
+                            Button { onSelect(row.id) } label: { rowView(row).contentShape(Rectangle()) }
+                                .buttonStyle(.plain)
+                                .accessibilityHint(Text("카운트다운 카드로 올리기"))
+                        } else {
+                            rowView(row)
+                        }
                     }
                 }
                 .opacity(isDimmed ? DesignTokens.Opacity.stale : 1)
