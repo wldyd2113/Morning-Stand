@@ -1,7 +1,7 @@
 import Foundation
 import Observation
 
-/// 주변 정류장을 찾으면 지도 화면으로 이동해 핀으로 보여주고, 핀을 고르면 그 정류장의 도착 정보와 지도 도보 시간을 불러온다.
+/// 주변 정류장을 찾으면 지도 화면으로 이동해 핀으로 보여주고, (표시 문구는 `NearbyDisplayMapper`가 만든다) 핀을 고르면 그 정류장의 도착 정보와 지도 도보 시간을 불러온다.
 /// 집 위치와 출근 자동 처리 설정도 이 탭에서 한다.
 @MainActor @Observable
 final class NearbyStopsViewModel {
@@ -69,90 +69,32 @@ final class NearbyStopsViewModel {
     }
 
     var display: NearbyDisplayModel {
-        NearbyDisplayModel(
-            locationText: location.value.map(Self.locationText),
-            isLocating: location == .loading || stops == .loading,
-            pins: (stops.value ?? []).compactMap { stop in
-                stop.coordinate.map { coordinate in
-                    NearbyDisplayModel.Pin(
-                        id: stop.id,
-                        name: stop.name,
-                        coordinate: coordinate,
-                        isSelected: stop.id == selectedStopID,
-                        isFavorite: favoriteStopIDs.contains(stop.id)
-                    )
-                }
-            },
-            message: message,
-            showsOpenSettings: location == .failed(.locationDenied),
-            initialCenter: home ?? PolicyConstants.DefaultLocation.coordinate,
-            userCoordinate: location.value?.coordinate,
-            homeCoordinate: home,
-            searchGeneration: searchGeneration,
-            resultSummary: stops.value.flatMap { $0.isEmpty ? nil : String(localized: "주변 정류장 \($0.count)곳") },
-            home: NearbyDisplayModel.Home(
-                title: home == nil
-                    ? String(localized: "집에 있을 때 현재 위치를 집으로 설정하면 날씨와 도보 시간을 집 기준으로 계산해요")
-                    : String(localized: "집 위치가 설정돼 있어요. 날씨와 도보 시간을 집 기준으로 계산해요"),
-                actionTitle: home == nil ? String(localized: "현재 위치를 집으로 설정") : String(localized: "현재 위치로 다시 설정"),
-                isSet: home != nil,
-                isUpdating: isUpdatingHome
+        NearbyDisplayMapper.make(
+            NearbyDisplayMapper.Input(
+                location: location,
+                stops: stops,
+                searchGeneration: searchGeneration,
+                selectedStopID: selectedStopID,
+                mapWalkMinutes: mapWalkMinutes,
+                arrivals: arrivals,
+                refreshingStopIDs: refreshingStopIDs,
+                favoriteStopIDs: favoriteStopIDs,
+                home: home,
+                isUpdatingHome: isUpdatingHome,
+                isAutomationOn: isAutomationOn,
+                isUpdatingAutomation: isUpdatingAutomation,
+                automationError: automationError,
+                isSaving: isSaving,
+                saveError: saveError,
+                now: dateProvider.now
             ),
-            automation: NearbyDisplayModel.Automation(
-                isOn: isAutomationOn,
-                // 이미 켜져 있으면 끌 수는 있어야 한다
-                isAvailable: home != nil || isAutomationOn,
-                unavailableReason: home == nil && !isAutomationOn ? String(localized: "먼저 위에서 집 위치를 설정하면 켤 수 있어요") : nil,
-                isUpdating: isUpdatingAutomation,
-                detail: String(localized: "집을 나서면 출발 카운트다운을 끝내고 출근을 기록해요. 정류장 근처에 오면 도착 정보를 알려 드려요"),
-                errorMessage: automationError
-            ),
-            selection: selectedStop.map(selection(for:))
+            calendar: calendar,
+            planDeparture: planDeparture
         )
-    }
-
-    private var message: String? {
-        if case .failed(let error) = location { return error.userMessage }
-        if let fix = location.value, !Self.isPreciseEnough(fix) {
-            return String(localized: "정확한 위치가 꺼져 있어 주변 정류장을 찾을 수 없어요. 설정에서 '정확한 위치'를 켜 주세요")
-        }
-        if case .failed(let error) = stops { return error.userMessage }
-        if stops.value?.isEmpty == true { return String(localized: "반경 \(PolicyConstants.Location.nearbyRadiusMeters)m 안에 정류장이 없어요") }
-        return nil
     }
 
     private func walkMinutes(for stop: TransitStop) -> Int {
-        mapWalkMinutes[stop.id]?.value ?? stop.estimatedWalkMinutes
-    }
-
-    private func selection(for stop: TransitStop) -> NearbyDisplayModel.Selection {
-        let walkState = mapWalkMinutes[stop.id]
-        let source: String = switch walkState {
-        case .loaded: home == nil ? String(localized: "지도 도보 경로 · 현재 위치에서") : String(localized: "지도 도보 경로 · 집에서")
-        case .loading: String(localized: "지도에서 도보 경로를 계산하는 중")
-        default: String(localized: "직선거리로 어림한 시간")
-        }
-        var detail = [stop.id]
-        if let meters = stop.distanceMeters { detail.append(DisplayFormatter.distanceText(meters: meters)) }
-        let isFavorite = favoriteStopIDs.contains(stop.id)
-        return NearbyDisplayModel.Selection(
-            name: stop.name,
-            detail: detail.joined(separator: " · "),
-            walkMinutesText: String(localized: "\(walkMinutes(for: stop))분"),
-            walkSourceText: source,
-            isCalculatingWalk: walkState == .loading,
-            arrivals: Self.arrivals(
-                arrivals[stop.id] ?? .idle,
-                isRefreshing: refreshingStopIDs.contains(stop.id),
-                walkMinutes: walkMinutes(for: stop),
-                now: dateProvider.now,
-                calendar: calendar,
-                planDeparture: planDeparture
-            ),
-            actionTitle: isFavorite ? String(localized: "즐겨찾기 저장됨 · 도보 시간 다시 저장") : String(localized: "이 도보 시간으로 즐겨찾기에 추가"),
-            isSaving: isSaving,
-            errorMessage: saveError
-        )
+        NearbyDisplayMapper.walkMinutes(for: stop, mapWalkMinutes: mapWalkMinutes)
     }
 
     // MARK: - 주변 정류장
@@ -164,7 +106,7 @@ final class NearbyStopsViewModel {
         do {
             let fix = try await locationProvider.currentLocation()
             location = .loaded(fix, fetchedAt: dateProvider.now)
-            guard Self.isPreciseEnough(fix) else {
+            guard NearbyDisplayMapper.isPreciseEnough(fix) else {
                 stops = .idle
                 return
             }
@@ -309,66 +251,6 @@ final class NearbyStopsViewModel {
             try await automation.setEnabled(isOn)
         } catch {
             automationError = error.userMessage
-        }
-    }
-
-    // MARK: - 순수 함수
-
-    nonisolated static func isPreciseEnough(_ fix: LocationFix) -> Bool {
-        !fix.isAccuracyReduced && fix.horizontalAccuracyMeters <= PolicyConstants.Location.nearbySearchMaxAccuracyMeters
-    }
-
-    nonisolated static func locationText(_ fix: LocationFix) -> String {
-        fix.isAccuracyReduced
-            ? String(localized: "대략적인 위치 기준")
-            : String(localized: "현재 위치 기준 · 오차 \(Int(fix.horizontalAccuracyMeters.rounded()))m")
-    }
-
-    /// 도착 정보 → 행. 남은 시간이 있는 노선은 도보 시간을 빼서 "N분 뒤 출발"까지 붙인다.
-    nonisolated static func arrivals(
-        _ state: SectionState<[RouteArrival]>,
-        isRefreshing: Bool,
-        walkMinutes: Int,
-        now: Date,
-        calendar: Calendar,
-        planDeparture: PlanDepartureUseCase
-    ) -> NearbyDisplayModel.Arrivals {
-        let rows: ([RouteArrival]) -> [NearbyDisplayModel.ArrivalRow] = { routes in
-            routes.map { route in
-                let base = StandDisplayMapper.row(route)
-                var row = NearbyDisplayModel.ArrivalRow(
-                    id: route.id,
-                    title: StandDisplayMapper.routeTitle(route),
-                    subtitle: route.kind == .bus ? (route.destination ?? "") : "",
-                    etaText: base.etaText,
-                    nextText: base.nextText
-                )
-                if case .arriving(let minutes, let next) = route.status {
-                    let plan = planDeparture(arrivalMinutes: minutes, nextArrivalMinutes: next, walkMinutes: walkMinutes)
-                    row.urgency = plan.urgency
-                    row.departureText = departureText(plan)
-                }
-                return row
-            }
-        }
-        switch state {
-        case .idle, .loading:
-            return .loading
-        case .loaded(let routes, let fetchedAt), .stale(let routes, let fetchedAt, _):
-            guard !routes.isEmpty else { return .message(String(localized: "지금 도착 정보가 없어요")) }
-            let updated = String(localized: "\(DisplayFormatter.elapsedText(from: fetchedAt, to: now, calendar: calendar)) 기준")
-            return .rows(rows(routes), updatedText: updated, isRefreshing: isRefreshing)
-        case .failed(let error):
-            return .message(error.userMessage)
-        }
-    }
-
-    nonisolated static func departureText(_ plan: DeparturePlan) -> String {
-        switch plan.urgency {
-        case .relaxed, .soon: String(localized: "\(plan.minutesUntilDeparture)분 뒤 출발")
-        case .now: String(localized: "지금 출발")
-        case .missed:
-            plan.nextDepartureMinutes.map { String(localized: "이번 차 놓침 · 다음 차 \($0)분 뒤 출발") } ?? String(localized: "이번 차 놓침")
         }
     }
 }

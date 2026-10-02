@@ -6,12 +6,12 @@ nonisolated struct EstimateWalkingTimeUseCase: Sendable {
 
     func callAsFunction(distanceMeters: Double) -> Int {
         let seconds = max(distanceMeters, 0) * policy.detourFactor / policy.speedMetersPerSecond
-        return clamped(Int((seconds / 60).rounded(.up)))
+        return clamped(Int(seconds.inMinutes.rounded(.up)))
     }
 
     /// 지도에서 받은 예상 시간(초)을 분으로 바꾼다. 올림해서 늦지 않게 한다.
     func minutes(fromTravelSeconds seconds: TimeInterval) -> Int {
-        clamped(Int((max(seconds, 0) / 60).rounded(.up)))
+        clamped(Int(max(seconds, 0).inMinutes.rounded(.up)))
     }
 
     private func clamped(_ minutes: Int) -> Int {

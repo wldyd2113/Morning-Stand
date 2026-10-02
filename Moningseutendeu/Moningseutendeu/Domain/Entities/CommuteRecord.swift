@@ -19,6 +19,6 @@ nonisolated struct CommuteRecord: Sendable, Equatable, Identifiable {
     /// 집 → 탑승까지 걸린 시간(분). 탑승 시각을 모르면 `nil`
     var doorToBoardMinutes: Int? {
         guard let boardedAt, boardedAt >= leftHomeAt else { return nil }
-        return Int((boardedAt.timeIntervalSince(leftHomeAt) / 60).rounded())
+        return Int(boardedAt.timeIntervalSince(leftHomeAt).inMinutes.rounded())
     }
 }

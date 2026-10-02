@@ -27,7 +27,7 @@ nonisolated struct RecordCommuteUseCase: Sendable {
         record.reachedStopAt = date
         if let (routeName, minutes) = Self.firstVehicle(in: board) {
             record.routeName = routeName
-            record.boardedAt = date.addingTimeInterval(TimeInterval(minutes * 60))
+            record.boardedAt = date.addingTimeInterval(.minutes(minutes))
         }
         return record
     }
@@ -37,17 +37,17 @@ nonisolated struct RecordCommuteUseCase: Sendable {
     func leftHomeManually(at date: Date, favorite: FavoriteStop, board: DepartureBoard?, plan: DeparturePlan?, openRecord: CommuteRecord? = nil, makeID: () -> UUID = UUID.init) -> CommuteRecord {
         var record = leftHome(at: date, favorite: favorite, plan: plan, openRecord: openRecord, makeID: makeID)
         let walkMinutes = board?.walkMinutes ?? favorite.walkMinutes
-        record.reachedStopAt = date.addingTimeInterval(TimeInterval(walkMinutes * 60))
+        record.reachedStopAt = date.addingTimeInterval(.minutes(walkMinutes))
         if let (routeName, minutes) = Self.firstCatchableVehicle(in: board, walkMinutes: walkMinutes) {
             record.routeName = routeName
-            record.boardedAt = date.addingTimeInterval(TimeInterval(minutes * 60))
+            record.boardedAt = date.addingTimeInterval(.minutes(minutes))
         }
         return record
     }
 
     /// 정류장 도착 이벤트를 붙일 진행 중 기록. 집을 나선 지 너무 오래됐으면 다른 외출로 본다.
     func openRecord(in records: [CommuteRecord], at date: Date) -> CommuteRecord? {
-        let limit = TimeInterval(policy.maximumWalkToStopMinutes * 60)
+        let limit = TimeInterval.minutes(policy.maximumWalkToStopMinutes)
         return records
             .filter { $0.reachedStopAt == nil && $0.leftHomeAt <= date && date.timeIntervalSince($0.leftHomeAt) <= limit }
             .max { $0.leftHomeAt < $1.leftHomeAt }

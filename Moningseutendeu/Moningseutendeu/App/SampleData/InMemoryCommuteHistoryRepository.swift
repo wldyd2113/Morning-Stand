@@ -41,11 +41,11 @@ nonisolated final class InMemoryCommuteHistoryRepository: CommuteHistoryReposito
             return CommuteRecord(
                 id: UUID(uuidString: String(format: "00000000-0000-0000-0000-%012d", index)) ?? UUID(),
                 leftHomeAt: leftAt,
-                reachedStopAt: leftAt.addingTimeInterval(6 * 60),
+                reachedStopAt: leftAt.addingTimeInterval(.minutes(6)),
                 stopName: "연신내역",
                 kind: .bus,
                 routeName: routes[index % routes.count],
-                boardedAt: leftAt.addingTimeInterval(TimeInterval(boardMinutes[slot] * 60)),
+                boardedAt: leftAt.addingTimeInterval(.minutes(boardMinutes[slot])),
                 missedPlannedVehicle: missed
             )
         }
